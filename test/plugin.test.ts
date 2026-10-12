@@ -72,6 +72,12 @@ describe('comment format', () => {
     expect(agent).toContain('ครับ<U+2063><U+2063>')
   })
 
+  test('refines the card and never questions its urgency', () => {
+    expect(agent).not.toContain('Urgent with no prod impact')
+    expect(agent).not.toContain('ยืนยันความเร่งด่วน')
+    expect(agent).toContain('never question a card\'s priority or urgency')
+  })
+
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
     for (const text of [agent, skill]) {
       expect(text).toMatch(/HIGH/)

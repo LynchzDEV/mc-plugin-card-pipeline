@@ -61,7 +61,7 @@ R1 overrides every STOP.
 | R6 | Polish/docs, no complaint | [UI], 🎨, คู่มือ, general improvement; no seller code, no complaint, no revenue words | STOP (backlog) |
 | R7 | Revenue-path change for a named seller | CR touching upsell, order matching, payment/credit/QT, order export, AND a named seller or measurable sales impact | PASS |
 | R8 | Big or foundational | Estimate 21h (above 13), spans several products, core data (dedupe, metric definitions), or a parent card to split | ASK-HUMAN (capacity) |
-| R9 | Label gaming | Log Type Bug/SuperBug but asks for something new (เพิ่ม/ต้องการ/อยากได้), or Urgent with no prod impact | ASK-HUMAN (re-label) |
+| R9 | Label gaming | Log Type Bug/SuperBug but asks for something new (เพิ่ม/ต้องการ/อยากได้) | ASK-HUMAN (re-label) |
 
 Never STOP on your own (ASK-HUMAN at most, even if the card is thin): a paying seller's live bot/messaging/extension down; billing/credit/QT/payment; Facebook account risk; 🚩/ธงแดง or key account (e.g. S01755); customer-facing wrong output that costs sales.
 
@@ -105,7 +105,7 @@ The comment is ClickUp markdown. Every card, bug or not, uses exactly this layou
    - PASS: "log นี้ข้อมูลเพียงพอสำหรับการทำงานแล้ว"
    - NEEDS-INFO: "log นี้ต้องการข้อมูลเพิ่มเติม"
    - NEEDS-INVESTIGATION: "log นี้ต้องตรวจสอบในระบบจริงก่อน จึงยังไม่ประมาณการจำนวนชั่วโมงครับ"
-   - ASK-HUMAN / STOP: one line saying whether the information is enough, then what a person must decide first, e.g. "log นี้ข้อมูลชัดเจนพอที่จะทำได้ แต่เป็นการเพิ่มการแสดงผล ไม่มีระบบเสีย จึงขอยืนยันความเร่งด่วน (Urgent) ก่อนครับ"
+   - ASK-HUMAN / STOP: one line saying whether the information is enough, then what a person must decide first, e.g. "log นี้ข้อมูลชัดเจนพอที่จะทำได้ แต่ขอยืนยันตำแหน่งที่ต้องการแสดงผลก่อนครับ"
 2. Business block, always present, directly under the first line:
    - Bug card with PASS or NEEDS-INFO: the why block, **ต้นเหตุ** / **แผนแก้** / **แผนป้องกัน**, each heading followed by one line (ต้นเหตุ may take two). ต้นเหตุ states only what the code or production evidence proves and says what could not be confirmed. แผนแก้ and แผนป้องกัน are plans, never "แก้แล้ว".
    - Every other card (features, CRs, and bug cards with any other verdict): **สรุป** on its own line, then one or two short lines under it in business words: what is asked, what already exists today, and anything that needs no development.
@@ -126,7 +126,7 @@ Style:
 - ต้นเหตุ in terms of what the customer saw or what the bot / screen did, never how the system is built inside ("ระบบส่งข้อมูลตั้งค่าให้บอท…" is too internal).
 - Ask only about what the requester raised. Never ask business to confirm internal setup they did not mention (persona names, config choices); put those in the REPORT.
 - Never write an end customer's name, phone, address or other personal detail. Seller codes and page names are fine.
-- Refinement only: never internal team matters (capacity, sprint plans, who moved or pulled the card). A capacity or scheduling concern (R8) goes in the REPORT only.
+- Refinement only: never internal team matters (capacity, sprint plans, who moved or pulled the card), and never question a card's priority or urgency (Urgent, "ต้องการเร็วที่สุด" and deadlines are the requester's call; take them as given). A capacity or scheduling concern (R8) goes in the REPORT only.
 
 ## After the verdict (done by the caller, never by you)
 1. CONFIDENCE HIGH: post COMMENT automatically, exactly as returned. If an earlier comment of ours is on the card (it contains two U+2063 characters back to back, or ends with the old footer), replace it in place; never post a second copy. MEDIUM or LOW: show the draft to the user first and post only after their OK.
