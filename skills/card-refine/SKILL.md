@@ -20,10 +20,12 @@ For each card, in `<scratch>/cards/<card-id>/` (never shared between cards, neve
 
 ## 3. Run biz-gate
 One agent per card, cards in parallel. Give each its card folder and tell it to use those files, not to download or query production itself.
+- A card that comes back NEEDS-INVESTIGATION with "prod lookups" in its REPORT: run `inv-prod` yourself for those lookups (read-only, light queries), add the results to that card's `prod.md`, and run biz-gate again. Never pass a question that production can answer on to the user.
 
 ## 4. Check the result before posting or showing it
 - Layout, every card: bold first line; the business block (bug card with PASS or NEEDS-INFO: bold ต้นเหตุ / แผนแก้ / แผนป้องกัน; any other card: bold สรุป with one or two lines); then, only if there are questions, bold คำถาม and at most 2 question bullets; an empty line, `---`, an empty line; dev bullets with facts only; no footer line; the first line, business lines, questions and the last dev bullet end with ครับ, and the last dev bullet then ends with two U+2063 characters. At most 12 lines and 5 bullets; another card linked once by its name.
 - Numbered card: list the description's item numbers, then check the comment: every mention of an item starts with "ข้อ <n>"; the cited numbers go up line by line and question by question; each number is in exactly one subtask group "(ข้อ a, b, c)" or named in the business block as "ไม่ต้องทำ" or waiting on an answer; the comment never says "ไม่ต้องพัฒนา". Any number missing, repeated or out of order: run biz-gate again with the list of what is wrong.
+- Every question in the comment: the REPORT names where it searched in the code and in production and why the answer is in neither. A question that confirms the agent's own proposal, that the old screen (`backoffice` / old Portal) answers, or that the code or production can answer: look it up (code yourself, production with `inv-prod`) and run biz-gate again with the answer.
 - CONFIDENCE matches CHECKS: no PASS or hours unless A, B and C are all yes with evidence.
 - Every estimated part of the fix is tied to the evidence in A; nothing "nice to clean up" carries hours.
 - If a check looks wrong (e.g. the agent read the wrong screenshots), fix the evidence and run it again; never pass it on.
