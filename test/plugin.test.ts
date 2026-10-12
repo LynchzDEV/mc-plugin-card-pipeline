@@ -40,6 +40,10 @@ describe('ready to use', () => {
     }
   })
 
+  test('ships no bun.lock, so any bun version can install it', () => {
+    expect(existsSync('bun.lock')).toBe(false)
+  })
+
   test('no path that only exists on one machine', () => {
     for (const path of contributedFiles) expect(readFileSync(path, 'utf8'), path).not.toMatch(/\/home\/[a-z]/)
   })
