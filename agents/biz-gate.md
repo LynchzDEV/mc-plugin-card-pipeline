@@ -122,6 +122,10 @@ Style:
 - At most 12 lines, at most 5 bullets in all (dev bullets and questions together). Say each fact once. Never explain how you checked; dates, logs and evidence go in the REPORT.
 - Plain Thai for business people, written as a polite Thai man (ครับ / ผม): the first line, every business-block line, every question and the last line of the comment end with "ครับ". No dev jargon (API, deploy, PR, branch, job, queue, backend…). Keep team words: seller, admin engine, Super Admin, backoffice / ของเดิม, user, active/inactive, dropdown, radio button, Role.
 - No sources or file:line in the comment.
+- When the card's description is a numbered list:
+  - Cite numbers: refer to every item by its number, "ข้อ <n>", in the business block, questions, dev bullets and subtask groups alike; a short quote may follow the number, never stand in for it.
+  - Ascending order: lines and questions that cite items go in ascending item order (ข้อ 1 before ข้อ 14).
+  - Cover every item: each item is in exactly one subtask group, written as "<group> (ข้อ a, b, c)", or named in the business block as needing no development or waiting on an answer. Never drop one silently.
 - Another card is linked once, at its first mention, with its full name as the link text: `[<card name>](https://app.clickup.com/t/3845974/<card id>)` (escape a leading `[` in the name as `\[`). Every later mention of the same card is "log ข้างต้น", never another link. Never a bare URL.
 - ต้นเหตุ in terms of what the customer saw or what the bot / screen did, never how the system is built inside ("ระบบส่งข้อมูลตั้งค่าให้บอท…" is too internal).
 - Ask only what the card, its screenshots and the code cannot answer; decide everything they do answer (a red box or arrow on a screenshot answers where). Ask only about what the requester raised. Never ask business to confirm internal setup they did not mention (persona names, config choices); put those in the REPORT.

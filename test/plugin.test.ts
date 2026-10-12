@@ -77,6 +77,10 @@ describe('comment format', () => {
     expect(agent).not.toContain('ยืนยันความเร่งด่วน')
     expect(agent).toContain('never question a card\'s priority or urgency')
     expect(agent).toContain('decide everything they do answer')
+    expect(agent).toContain('refer to every item by its number')
+    expect(agent).toContain('Ascending order')
+    expect(agent).toContain('Cover every item')
+    expect(skill).toContain('Any number missing, repeated or out of order')
   })
 
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
