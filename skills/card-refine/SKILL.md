@@ -22,7 +22,7 @@ For each card, in `<scratch>/cards/<card-id>/` (never shared between cards, neve
 One agent per card, cards in parallel. Give each its card folder and tell it to use those files, not to download or query production itself.
 
 ## 4. Check the result before posting or showing it
-- Layout, every card: bold first line; the business block (bug card with PASS or NEEDS-INFO: bold ต้นเหตุ / แผนแก้ / แผนป้องกัน; any other card: bold สรุป with one or two lines); then, only if there are questions, bold คำถาม and at most 2 question bullets; an empty line, `---`, an empty line; dev bullets with facts only; no footer line; the last dev bullet ends with two U+2063 characters. At most 12 lines and 5 bullets; another card linked once by its name.
+- Layout, every card: bold first line; the business block (bug card with PASS or NEEDS-INFO: bold ต้นเหตุ / แผนแก้ / แผนป้องกัน; any other card: bold สรุป with one or two lines); then, only if there are questions, bold คำถาม and at most 2 question bullets; an empty line, `---`, an empty line; dev bullets with facts only; no footer line; the first line, business lines, questions and the last dev bullet end with ครับ, and the last dev bullet then ends with two U+2063 characters. At most 12 lines and 5 bullets; another card linked once by its name.
 - CONFIDENCE matches CHECKS: no PASS or hours unless A, B and C are all yes with evidence.
 - Every estimated part of the fix is tied to the evidence in A; nothing "nice to clean up" carries hours.
 - If a check looks wrong (e.g. the agent read the wrong screenshots), fix the evidence and run it again; never pass it on.

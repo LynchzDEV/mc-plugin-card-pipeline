@@ -68,6 +68,10 @@ describe('comment format', () => {
     }
   })
 
+  test('the comment ends with ครับ just before the marker', () => {
+    expect(agent).toContain('ครับ<U+2063><U+2063>')
+  })
+
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
     for (const text of [agent, skill]) {
       expect(text).toMatch(/HIGH/)
