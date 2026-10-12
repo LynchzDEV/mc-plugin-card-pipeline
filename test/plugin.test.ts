@@ -82,7 +82,19 @@ describe('comment format', () => {
     expect(agent).toContain('Cover every item')
     expect(agent).toContain('never "ไม่ต้องพัฒนา"')
     expect(agent).not.toMatch(/needs? no development|needing no development/)
-    expect(skill).toContain('Any number missing, repeated or out of order')
+    expect(skill).toContain('Any number missing, with two dispositions, or out of order')
+  })
+
+  test('looks answers up in code and production instead of asking', () => {
+    expect(agent).toContain('Look it up, never ask — before any rule')
+    expect(agent).not.toContain('ask one closed question')
+    expect(agent).not.toMatch(/prefer one closed/)
+    expect(agent).toContain('Never run `inv-prod` or any production query yourself')
+    expect(agent).toContain('never turn the blocked access into a question')
+    expect(skill).toContain('At most 3 biz-gate runs per card')
+    expect(skill).toContain('statement_timeout')
+    expect(skill).toContain('no **คำถาม** block: go straight to step 6')
+    for (const text of [agent, skill]) expect(text).toContain('NEEDS-INVESTIGATION is never posted')
   })
 
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
