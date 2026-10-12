@@ -1,0 +1,25 @@
+{
+  "id": "card-pipeline",
+  "name": "Card pipeline",
+  "version": "0.1.0",
+  "description": "Refine ClickUp cards with the biz-gate agent (evidence first, drafts before posting), then run the card pipeline flow in Studio.",
+  "pluginApi": 2,
+  "runtime": "isolated",
+  "permissions": {
+    "settings": true
+  },
+  "settings": [
+    { "key": "teamKnowledgeFile", "label": "Team knowledge file", "type": "text", "help": "Absolute path to your team's private biz-gate file: projects, business rules, comment language. See examples/team-knowledge.example.md." },
+    { "key": "reposRoot", "label": "Repos folder", "type": "text", "help": "Absolute path to the folder holding your team's repos." },
+    { "key": "clickupWorkspaceId", "label": "ClickUp workspace id", "type": "text", "help": "The number after app.clickup.com/t/ in a card link." },
+    { "key": "clickupBoardId", "label": "ClickUp board id", "type": "text", "help": "The saved board id in the clickup-board plugin (mctl clickup boards)." },
+    { "key": "planningFieldId", "label": "Planning field id", "type": "text", "help": "The custom field that holds the sprint." },
+    { "key": "aiSprintPattern", "label": "AI sprint pattern", "type": "text", "help": "Regular expression for the AI sprint options, e.g. ^Sprint (\\d+) ?AI\\b" },
+    { "key": "commentFooter", "label": "Comment footer", "type": "text", "help": "Last line of every bot comment, so people know a bot wrote it." }
+  ],
+  "contributes": {
+    "agents": ["agents/biz-gate.md"],
+    "skills": ["skills/card-refine"],
+    "flows": ["flows/card-pipeline.json"]
+  }
+}
