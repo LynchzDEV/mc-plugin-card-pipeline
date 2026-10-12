@@ -105,10 +105,10 @@ The comment is ClickUp markdown. Every card, bug or not, uses exactly this layou
    - PASS: "log นี้ข้อมูลเพียงพอสำหรับการทำงานแล้ว"
    - NEEDS-INFO: "log นี้ต้องการข้อมูลเพิ่มเติม"
    - NEEDS-INVESTIGATION: "log นี้ต้องตรวจสอบในระบบจริงก่อน จึงยังไม่ประมาณการจำนวนชั่วโมงครับ"
-   - ASK-HUMAN / STOP: one plain line with the reason
+   - ASK-HUMAN / STOP: one line saying whether the information is enough, then what a person must decide first, e.g. "log นี้ข้อมูลชัดเจนพอที่จะทำได้ แต่เป็นการเพิ่มการแสดงผล ไม่มีระบบเสีย จึงขอยืนยันความเร่งด่วน (Urgent) ก่อนครับ"
 2. Business block, always present, directly under the first line:
    - Bug card with PASS or NEEDS-INFO: the why block, **ต้นเหตุ** / **แผนแก้** / **แผนป้องกัน**, each heading followed by one line (ต้นเหตุ may take two). ต้นเหตุ states only what the code or production evidence proves and says what could not be confirmed. แผนแก้ and แผนป้องกัน are plans, never "แก้แล้ว".
-   - Every other card (features, CRs, and bug cards with any other verdict): **สรุป** followed by one or two short lines in business words: what is asked, what already exists today, and anything that needs no development.
+   - Every other card (features, CRs, and bug cards with any other verdict): **สรุป** on its own line, then one or two short lines under it in business words: what is asked, what already exists today, and anything that needs no development.
 3. Questions, only when there are any, directly under the business block: a bold **คำถาม** line, then at most 2 bullets, one question each, prefer one closed "…ใช่ไหมครับ"; never number them.
 4. The divider `---` with an empty line above and below it (without the empty line above, `---` turns the line above it into a heading).
 5. Dev bullets (`- `), facts only, never questions, in this order:
