@@ -76,6 +76,7 @@ describe('comment format', () => {
     expect(agent).not.toContain('Urgent with no prod impact')
     expect(agent).not.toContain('ยืนยันความเร่งด่วน')
     expect(agent).toContain('never question a card\'s priority or urgency')
+    expect(agent).toContain('decide everything they do answer')
   })
 
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
