@@ -9,14 +9,14 @@ Runs the biz-gate agent on ClickUp cards the way it was tuned: evidence first, d
 
 ## 1. Check prerequisites (stop and name what is missing)
 - The clickup-board plugin answers: `{{mc:mctl}} plugin call clickup-board boards.list --json`.
-- The team knowledge file exists: `{{setting:teamKnowledgeFile}}`.
-- The production investigation skill named in the team file is installed.
+- A board is saved in clickup-board: `{{mc:mctl}} plugin call clickup-board boards.list --json` (the saved board whose folder is `~/klangtech`, or the only one).
+- The `inv-prod` skill (read-only production investigation) is installed, and you can reach production with it.
 
 ## 2. Gather the evidence, one folder per card
 For each card, in `<scratch>/cards/<card-id>/` (never shared between cards, never inside a repo):
 - `card.md`: `{{mc:mctl}} plugin call clickup-board source.item --params '{"id":"<card-id>"}' --json` → `contextMarkdown`.
 - Every screenshot in the card's description and attachments: `curl -sS -o <n>.png '<url>'`. Open each one yourself and note what it shows.
-- Bug card (Log Type 🐛Bug/🦋SuperBug, or BUG/🐛 in the title): run the team's read-only production investigation yourself, light queries only, and write what you found to `prod.md`: what was searched, where, and the results, including what could not be read. Never let a background agent be the only one to try production: its access can be blocked.
+- Bug card (Log Type 🐛Bug/🦋SuperBug, or BUG/🐛 in the title): run `inv-prod` yourself (read-only), light queries only, and write what you found to `prod.md`: what was searched, where, and the results, including what could not be read. Never let a background agent be the only one to try production: its access can be blocked.
 
 ## 3. Run biz-gate
 One agent per card, cards in parallel. Give each its card folder and tell it to use those files, not to download or query production itself.
@@ -32,9 +32,9 @@ Show, per card: VERDICT, CONFIDENCE, CHECKS with evidence, the comment exactly a
 
 ## 6. On the user's OK, per card
 1. Post the comment, or replace your earlier comment on that card in place (never a second copy).
-2. Set Planning (`{{setting:planningFieldId}}`) to the newest option matching `{{setting:aiSprintPattern}}`, read live from `{{mc:mctl}} plugin call clickup-board board.load --params '{"boardId":"{{setting:clickupBoardId}}"}' --json`.
+2. Set Planning (custom field `1769d214-d88b-413e-b56c-45fb86f454cb`) to the newest "Sprint <n>AI (…)" / "Sprint <n> AI (…)" option, read live from `{{mc:mctl}} plugin call clickup-board board.load --params '{"boardId":"<board id>"}' --json` with the board id from step 1.
 3. Set the Time estimate from ESTIMATE (on subtasks when the card has them).
-4. Read the card back and report what saved: comment present, footer `{{setting:commentFooter}}`, Planning value, Time estimate.
+4. Read the card back and report what saved: comment present, footer `[🤖 Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]`, Planning value, Time estimate.
 
 ## 7. Report
 A table: card (linked by name), verdict, confidence, estimate, sprint, and anything that did not save.

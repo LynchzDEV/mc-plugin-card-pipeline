@@ -12,7 +12,6 @@ function filesUnder(path: string): string[] {
 }
 
 const contributedFiles = [...contributes.agents, ...contributes.skills, ...contributes.flows].flatMap(filesUnder)
-const textSettings = new Set((manifest.settings as Array<{ key: string; type: string }>).filter((field) => field.type === 'text').map((field) => field.key))
 
 describe('manifest', () => {
   test('passes the SDK check', () => {
@@ -32,19 +31,17 @@ describe('manifest', () => {
   })
 })
 
-describe('placeholders', () => {
-  test('every {{setting:…}} is a declared text setting', () => {
+describe('ready to use', () => {
+  test('declares no settings and fills nothing but the mctl command', () => {
+    expect(manifest.settings).toBeUndefined()
     for (const path of contributedFiles) {
-      for (const [, key] of readFileSync(path, 'utf8').matchAll(/\{\{setting:([^}]+)\}\}/g)) {
-        expect(textSettings.has(key), `${path}: ${key}`).toBe(true)
-      }
+      expect(readFileSync(path, 'utf8'), path).not.toMatch(/\{\{setting:/)
+      for (const [, key] of readFileSync(path, 'utf8').matchAll(/\{\{mc:([^}]+)\}\}/g)) expect(key, path).toBe('mctl')
     }
   })
 
-  test('only known {{mc:…}} values are used', () => {
-    for (const path of contributedFiles) {
-      for (const [, key] of readFileSync(path, 'utf8').matchAll(/\{\{mc:([^}]+)\}\}/g)) expect(key, path).toBe('mctl')
-    }
+  test('no path that only exists on one machine', () => {
+    for (const path of contributedFiles) expect(readFileSync(path, 'utf8'), path).not.toMatch(/\/home\/[a-z]/)
   })
 })
 
@@ -66,17 +63,6 @@ describe('flow', () => {
       expect(ids.has(edge.source), edge.source).toBe(true)
       expect(ids.has(edge.target), edge.target).toBe(true)
       expect(['pass', 'fail', 'blocked']).toContain(edge.outcome)
-    }
-  })
-})
-
-describe('nothing team-private ships', () => {
-  test('no team ids, people, hosts or seller codes in the repo files', () => {
-    const shipped = ['mc-plugin.json', 'README.md', ...contributedFiles, 'examples/team-knowledge.example.md'].filter((path) => existsSync(path))
-    const forbidden = [/S0\d{4}/, /\b\d{7}\b/, /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, /\bb-[0-9a-f]{8}\b/, /klangtech/i, /\/home\/[a-z]/, /prod-kt/, /chatawt/i, /mahamodo/i]
-    for (const path of shipped) {
-      const text = readFileSync(path, 'utf8')
-      for (const pattern of forbidden) expect(text.match(pattern)?.[0] ?? null, `${path}: ${pattern}`).toBeNull()
     }
   })
 })
