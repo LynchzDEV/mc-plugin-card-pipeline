@@ -97,6 +97,12 @@ describe('comment format', () => {
     for (const text of [agent, skill]) expect(text).toContain('NEEDS-INVESTIGATION is never posted')
   })
 
+  test('writes แผนป้องกัน only when a concrete prevention fits the bug', () => {
+    expect(agent).toContain('**แผนป้องกัน** only when a concrete prevention makes sense')
+    expect(agent).toContain('no concrete prevention means no แผนป้องกัน heading at all')
+    expect(skill).toContain('never general process advice')
+  })
+
   test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
     for (const text of [agent, skill]) {
       expect(text).toMatch(/HIGH/)
