@@ -49,6 +49,29 @@ describe('ready to use', () => {
   })
 })
 
+describe('comment format', () => {
+  const agent = readFileSync(contributes.agents[0]!, 'utf8')
+  const skill = readFileSync(join(contributes.skills[0]!, 'SKILL.md'), 'utf8')
+
+  test('every card gets the business block, divider and question section', () => {
+    for (const part of ['**สรุป**', '***', '**คำถาม**', 'ต้นเหตุ', 'แผนแก้', 'แผนป้องกัน']) expect(agent, part).toContain(part)
+  })
+
+  test('marks our comments with two U+2063 characters instead of a visible footer', () => {
+    for (const text of [agent, skill]) expect(text).toContain('two U+2063 characters')
+    for (const text of [agent, skill]) {
+      for (const line of text.split('\n').filter((line) => line.includes('ยังไม่ต้อบตอบ'))) expect(line).toMatch(/earlier comment|old footer/)
+    }
+  })
+
+  test('posts HIGH on its own and shows MEDIUM and LOW first', () => {
+    for (const text of [agent, skill]) {
+      expect(text).toMatch(/HIGH/)
+      expect(text).toMatch(/MEDIUM or LOW/)
+    }
+  })
+})
+
 describe('flow', () => {
   const flow = JSON.parse(readFileSync(contributes.flows[0]!, 'utf8')) as {
     entry: string
