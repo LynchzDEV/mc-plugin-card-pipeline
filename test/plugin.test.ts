@@ -80,6 +80,8 @@ describe('comment format', () => {
     expect(agent).toContain('refer to every item by its number')
     expect(agent).toContain('Ascending order')
     expect(agent).toContain('Cover every item')
+    expect(agent).toContain('never "ไม่ต้องพัฒนา"')
+    expect(agent).not.toMatch(/needs? no development|needing no development/)
     expect(skill).toContain('Any number missing, repeated or out of order')
   })
 
