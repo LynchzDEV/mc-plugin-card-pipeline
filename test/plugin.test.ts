@@ -53,8 +53,12 @@ describe('comment format', () => {
   const agent = readFileSync(contributes.agents[0]!, 'utf8')
   const skill = readFileSync(join(contributes.skills[0]!, 'SKILL.md'), 'utf8')
 
-  test('every card gets the business block, divider and question section', () => {
-    for (const part of ['**สรุป**', '***', '**คำถาม**', 'ต้นเหตุ', 'แผนแก้', 'แผนป้องกัน']) expect(agent, part).toContain(part)
+  test('every card gets the business block, questions, divider and dev bullets in that order', () => {
+    for (const part of ['**สรุป**', 'ต้นเหตุ', 'แผนแก้', 'แผนป้องกัน']) expect(agent, part).toContain(part)
+    const template = agent.slice(agent.indexOf('**<first line by verdict>**'))
+    const order = ['**<first line by verdict>**', '**คำถาม**', '\n\n---\n\n', 'Requirement นี้เป็นการทำงานที่'].map((part) => template.indexOf(part))
+    expect(order.every((position) => position >= 0)).toBe(true)
+    expect(order).toEqual([...order].sort((a, b) => a - b))
   })
 
   test('marks our comments with two U+2063 characters instead of a visible footer', () => {

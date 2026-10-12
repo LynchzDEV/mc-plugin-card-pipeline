@@ -22,7 +22,7 @@ For each card, in `<scratch>/cards/<card-id>/` (never shared between cards, neve
 One agent per card, cards in parallel. Give each its card folder and tell it to use those files, not to download or query production itself.
 
 ## 4. Check the result before posting or showing it
-- Layout, every card: bold first line; the business block (bug card with PASS or NEEDS-INFO: bold ต้นเหตุ / แผนแก้ / แผนป้องกัน; any other card: bold สรุป with one or two lines); `***` right under it; dev bullets with facts only; then, only if there are questions, an empty line, bold คำถาม and at most 2 question bullets; no footer line; the text ends with two U+2063 characters. At most 12 lines and 5 bullets; another card linked once by its name.
+- Layout, every card: bold first line; the business block (bug card with PASS or NEEDS-INFO: bold ต้นเหตุ / แผนแก้ / แผนป้องกัน; any other card: bold สรุป with one or two lines); then, only if there are questions, bold คำถาม and at most 2 question bullets; an empty line, `---`, an empty line; dev bullets with facts only; no footer line; the last dev bullet ends with two U+2063 characters. At most 12 lines and 5 bullets; another card linked once by its name.
 - CONFIDENCE matches CHECKS: no PASS or hours unless A, B and C are all yes with evidence.
 - Every estimated part of the fix is tied to the evidence in A; nothing "nice to clean up" carries hours.
 - If a check looks wrong (e.g. the agent read the wrong screenshots), fix the evidence and run it again; never pass it on.
@@ -32,12 +32,12 @@ One agent per card, cards in parallel. Give each its card folder and tell it to 
 - MEDIUM or LOW: show VERDICT, CONFIDENCE, CHECKS with evidence, the comment exactly as it would be posted, SUBTASKS and ESTIMATE, and post nothing for that card until the user says so; then do step 6.
 
 ## 6. Write to the card
-1. Post the comment, or replace our earlier comment on that card in place (it ends with two U+2063 characters, or with the old footer "[🤖 Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]"); never post a second copy.
+1. Post the comment, or replace our earlier comment on that card in place (it contains two U+2063 characters back to back, or ends with the old footer "[🤖 Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]"); never post a second copy.
 2. Set Planning (custom field `1769d214-d88b-413e-b56c-45fb86f454cb`) to the newest "Sprint <n>AI (…)" / "Sprint <n> AI (…)" option, read live from `{{mc:mctl}} plugin call clickup-board board.load --params '{"boardId":"<board id>"}' --json` with the board id from step 1.
    Do this for every verdict.
 3. PASS with real subtasks in SUBTASKS (not "possible:"): create each under the card with its title and set its Time estimate. Any other verdict: create none.
 4. PASS without subtasks: set the Time estimate from ESTIMATE. Otherwise leave it untouched.
-5. Read the card back and report what saved: the comment present once and ending with the two U+2063 characters, the Planning value, subtasks, the Time estimate.
+5. Read the card back and report what saved: the comment present once and containing the two U+2063 characters, the Planning value, subtasks, the Time estimate.
 
 ## 7. Report
 A table: card (linked by name), verdict, confidence, posted on its own or waiting for the user, estimate, sprint, and anything that did not save.
