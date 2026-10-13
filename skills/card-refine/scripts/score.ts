@@ -411,7 +411,10 @@ function runJudge(command: string, cardDir: string, prompt: string, seed: number
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const run = Bun.spawnSync(['sh', '-c', `${command} "$(cat ${file})"`], { cwd: cardDir, stdout: 'pipe', stderr: 'pipe' })
     const answer = asAnswer(lastJsonObject(run.stdout.toString()), itemIds)
-    if (answer) return answer
+    if (answer) {
+      writeFileSync(join(cardDir, file.replace('judge-prompt-', 'judge-answer-').replace(/\.md$/, '.json')), JSON.stringify(answer, null, 2))
+      return answer
+    }
   }
   return null
 }
