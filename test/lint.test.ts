@@ -306,3 +306,33 @@ describe('scope moved to a sibling card', () => {
     expect(lint(withBusinessLine('ส่วนช่องกรองไม่ต้องทำในรอบนี้ครับ'), keyOptions(futr8)).codes).not.toContain('scope-moved-to-sibling')
   })
 })
+
+describe('short and tight', () => {
+  const head = '**log นี้ข้อมูลเพียงพอสำหรับการทำงานแล้วครับ**\n**สรุป**\n'
+  const tail = '\n\n---\n\n- Requirement นี้เป็นการทำงานที่ Army\n- **ประมาณการจำนวนชั่วโมง:** 3 ชั่วโมง (งาน) ครับ' + MARKER + '\n'
+  const codesFor = (business: string) => lint(head + business + tail, { verdict: 'PASS' }).codes
+
+  test('a business block over 1,000 characters is an error', () => {
+    expect(codesFor(Array.from({ length: 6 }, () => 'ทำตามของเดิมครับ '.repeat(12)).join('\n'))).toContain('business-too-long')
+  })
+
+  test('a business block over 8 lines is an error', () => {
+    expect(codesFor(Array.from({ length: 9 }, (_, index) => `ข้อ ${index + 1} ทำตามของเดิมครับ`).join('\n'))).toContain('business-too-long')
+  })
+
+  test('a single line over 360 characters is an error', () => {
+    expect(codesFor('ทำตามของเดิมครับ '.repeat(25))).toContain('line-too-long')
+  })
+
+  test('a bare ข้อ N ไม่ต้องทำครับ is an error, with a reason it is not', () => {
+    expect(codesFor('ข้อ 1 ไม่ต้องทำครับ')).toContain('bare-not-needed')
+    expect(codesFor('ข้อ 1 มีอยู่แล้ว ค้นชื่อเพจได้จาก dropdown เพจครับ')).not.toContain('bare-not-needed')
+  })
+
+  test('a short approved-size block passes all three', () => {
+    const codes = codesFor('ทำตามของเดิม (backoffice) ครับ\nข้อ 1 มีอยู่แล้วครับ')
+    expect(codes).not.toContain('business-too-long')
+    expect(codes).not.toContain('line-too-long')
+    expect(codes).not.toContain('bare-not-needed')
+  })
+})

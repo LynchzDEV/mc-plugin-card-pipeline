@@ -318,6 +318,21 @@ function lengthFindings(comment: string): Finding[] {
   return lines > MAX_LINES ? [{ code: 'length', evidence: `${lines} non-empty lines; aim for at most ${MAX_LINES}`, warning: true }] : []
 }
 
+const MAX_BUSINESS_LINES = 8
+const MAX_BUSINESS_CHARS = 1000
+const MAX_LINE_CHARS = 360
+const BARE_NOT_NEEDED = /^\s*(?:ข้อ\s*[\d.,\s]+(?:และ\s*[\d.]+\s*)?)?ไม่ต้องทำ\s*(?:ครับ)?\s*$/u
+
+function businessLengthFindings(view: Layout): Finding[] {
+  const lines = view.business.filter((line) => line.trim())
+  const chars = lines.join('\n').length
+  const findings: Finding[] = []
+  if (lines.length > MAX_BUSINESS_LINES || chars > MAX_BUSINESS_CHARS) findings.push({ code: 'business-too-long', evidence: `${lines.length} lines / ${chars} characters in the business block; at most ${MAX_BUSINESS_LINES} lines and ${MAX_BUSINESS_CHARS} characters` })
+  for (const line of lines) if (line.length > MAX_LINE_CHARS) findings.push({ code: 'line-too-long', evidence: `${line.length} characters on line "${line.trim().slice(0, 40)}…"; at most ${MAX_LINE_CHARS}` })
+  for (const line of lines) if (BARE_NOT_NEEDED.test(line)) findings.push({ code: 'bare-not-needed', evidence: `"${line.trim()}" says ไม่ต้องทำ without the business reason (มีอยู่แล้ว…, อยู่ใน log…, รอ Biz ยืนยัน…)` })
+  return findings
+}
+
 export function lintComment(comment: string, options: LintOptions): Finding[] {
   const view = layout(comment)
   const subtasks = options.subtasks ?? []
@@ -327,6 +342,7 @@ export function lintComment(comment: string, options: LintOptions): Finding[] {
   return [
     ...verdict,
     ...headingFindings(view),
+    ...businessLengthFindings(view),
     ...questionFindings(view),
     ...endingFindings(view),
     ...devFindings(view),
