@@ -8,6 +8,10 @@ Approved pieces of work and their hours, for estimating. A row sizes a piece. It
 | agent list page + sidebar entry / หน้ารายการเอเจนต์ เมนู | klangtech-army | 5 | 86d4cxz32 |
 | button rename + price line + date strip + tooltip / เปลี่ยนชื่อปุ่ม ราคา ค่าใช้จ่าย แถบวันที่ tooltip | klangtech-army | 5 | 14znf2futry |
 | two company-scoped date reads for Army / วันที่ล่าสุด ส่งค่าให้ Army | api | 3 | 14znf2futry |
+| KToken usage report page ported from backoffice (table, filters, totals, menu entry) / หน้ารายงานการใช้โทเคน ตัวกรอง ยอดรวม เมนู | klangtech-army | 5 | 14znf2fuvch (owner 2026-10-13: "dev sees 5 max") |
+| seller-level VAYU report aggregating the existing agent-level report across every page / รายงาน VAYU ระดับร้าน รวมทุกเพจ จากรายงานรายเอเจนต์ที่มีอยู่ | klangtech-army | 3 | 14znf2fuvc8 (owner 2026-10-13) |
+| customer list: user_id, created, last-contact columns + rows per page / คอลัมน์ user_id วันเวลาสร้าง ทักล่าสุด จำนวนแถวต่อหน้า | klangtech-army | 3 | 14znf2fuvc5 (owner 2026-10-13) |
+| verification only, work already built in another log / เสร็จแล้วใน log อื่น รอเทส | any | 1 | 14znf2fuvcp (owner 2026-10-13) |
 
 ## Sprint 16–17 actuals (estimate vs tracked, whole card, no subtasks)
 
