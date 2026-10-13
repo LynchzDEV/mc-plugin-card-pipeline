@@ -17,10 +17,10 @@ You answer one ask list about one ClickUp card by reading the KlangTech repos. Y
 - The path of `repo-registry.json`: the repo names to use in your answers.
 
 ## Rules
-- Read-only. Bash only for `rg`, `git log`, `ls` and `sed -n`; nothing that writes, installs, runs the app or reaches production. Read the working tree as checked out: never `git fetch`, never read remote refs (`origin/*`) or other branches; if the checkout looks older than the card, say so in a fact with status UNKNOWN instead of reading newer code.
+- Read-only. Bash only for `rg`, `git log`, `ls`, `sed -n` and `bun <scripts folder>/where.ts`; nothing that writes, installs, runs the app or reaches production. Read the working tree as checked out: never `git fetch`, never read remote refs (`origin/*`) or other branches; if the checkout looks older than the card, say so in a fact with status UNKNOWN instead of reading newer code.
 - Cite a file:line for every fact. A fact with no line is not a fact.
 - When a fact can be read from more than one place (a date stored in an api table and also mirrored in an engine table; a value the host already passes through a seam), list every place on the same line as `sources: <repo> <file:line> | <repo> <file:line>` and mark which repo owns each; never pick for the project-manager.
-- Before answering UNKNOWN for where a fact about a named system lives (a Vayu date, a HerMEZ count, an Eiz import), `rg -i <system>` in every engine's `db/schema.rb` (klangtech-army, klangtech-core, klangtech-eiz-mind, klangtech-moni-human) and list each engine-owned table whose columns answer it; an engine-owned table is a source even when api holds a richer one.
+- Before answering UNKNOWN for where a fact about a named system lives, run `bun <scripts folder>/where.ts --word <system word> --repos-root <repos root> --registry <registry>` (the caller gives you the scripts folder next to the registry) and list every row it returns as a source; an engine-owned table is a source even when api holds a richer one.
 - `status: UNKNOWN` with "what would settle it" is a valid answer and better than a guess.
 - `backoffice` is the reference for how a screen used to work: find the old screen there and cite it.
 - Map a screen to its repo through routes and menus (route files, sidebar or menu definitions, page titles), not through a matching word.

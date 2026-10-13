@@ -32,6 +32,11 @@ A flow node, not the session. The job runs the `project-manager` agent with:
 
 It returns the output block (VERDICT … LINT) and leaves `facts.md`, `comment.md`, `subtasks.json`, `prod-questions.md`, `lint.txt` and `package.md` in the card folder.
 
+### Lookup tools (in `scripts/`, next to the registry)
+The project-manager and code-architect run these instead of deciding by prose:
+- `where.ts` — which repo owns a table or column for a system word, with its time columns: `bun scripts/where.ts --word <vayu|hermez|order_import…> --repos-root ~/klangtech --registry scripts/repo-registry.json [--json]`
+- `anchor.ts` — nearest anchor rows and the Fibonacci bucket for a subtask: `bun scripts/anchor.ts --anchors examples/anchors.md --title "<subtask title> <summary>" [--repo <name>] [--top 5]`
+
 ## 4. PROD-LOOKUPS
 - Read `PROD-QUESTIONS` in the package. `none`: report pass with evidence "no production questions".
 - Otherwise spawn `production-investigator` (Agent tool) with `prod-questions.md` and the card folder. It writes `prod.md`; its production access raises the owner's permission prompt in this session. Report fail with summary "new facts in prod.md" so the project-manager runs again (at most 3 project-manager visits per card).
