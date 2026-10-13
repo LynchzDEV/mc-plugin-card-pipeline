@@ -39,6 +39,15 @@ Mission Control copies the three agents and the `card-refine` skill (with its sc
 ## Use
 Run the **Card pipeline** flow in Studio with a card link, or say "refine `<card link>`" in a session. The session lands the card; the project-manager job investigates and drafts; production questions, if any, come back to your session (your permission prompt guards every production access); the advisor's findings and the lint output ride to one approval screen. Answer yes, edit, or "send back with: …". Only after yes does the session post the comment, set the sprint, create approved business-value subtasks and read everything back. It does not delete subtasks the card already had.
 
+## What changed in 0.5.1
+
+Owner review of the first six migrate-1 cards (2026-10-13):
+- One comment per card, posted only after every card in the batch is investigated; a question lives inside that comment, never in its own post.
+- Short Biz comment enforced by lint errors: business block at most 8 lines / 1,000 characters, no line over 360; never a bare "ข้อ N ไม่ต้องทำครับ".
+- `related.md` also lists existing work in the same list (any status): a card that already covers the ask is a one-line duplicate; work already built elsewhere is 1 hour of verification.
+- A feature that exists at a narrower level and is asked at the seller level is aggregation only (≤ 3 h); one screen is one anchor part; a ported backoffice report page is ≤ 5 h.
+- Work that belongs to another card is named with that card's link, never alluded to.
+
 ## What changed in 0.5.0
 - `biz-gate` is replaced by `project-manager`, one author per card with two nested helpers: `code-architect` (code facts with file:line) and `production-investigator` (read-only production answers, called by the session so the owner's prompt guards it).
 - Subtask labels are repo names from the registry (`[api]`, `[klangtech-army]`), never Old server / Domains / Army; every subtask carries the latest AI sprint.
