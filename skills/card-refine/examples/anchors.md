@@ -12,6 +12,8 @@ Approved pieces of work and their hours, for estimating. A row sizes a piece. It
 | seller-level VAYU report aggregating the existing agent-level report across every page / รายงาน VAYU ระดับร้าน รวมทุกเพจ จากรายงานรายเอเจนต์ที่มีอยู่ | klangtech-army | 3 | 14znf2fuvc8 (owner 2026-10-13) |
 | customer list: user_id, created, last-contact columns + rows per page / คอลัมน์ user_id วันเวลาสร้าง ทักล่าสุด จำนวนแถวต่อหน้า | klangtech-army | 3 | 14znf2fuvc5 (owner 2026-10-13) |
 | verification only, work already built in another log / เสร็จแล้วใน log อื่น รอเทส | any | 1 | 14znf2fuvcp (owner 2026-10-13) |
+| settings card added next to existing cards on a Super Admin page (table, add/remove rows, save) / การ์ดตั้งค่าเพิ่มในหน้าที่มีการ์ดอยู่แล้ว | klangtech-super-admin | 3 | 14znf2fuvcz (owner 2026-10-13: "mostly port, extend each") |
+| report page ported from backoffice that reuses an existing api calculation through one read (menu, filters, charts, CSV) / หน้ารายงานที่ย้ายมาและอ่านชุดคำนวณเดิม | klangtech-army | 3 | 14znf2fuvd2 (owner 2026-10-13: 8h → 3h, "mostly port, extend each") |
 
 ## Sprint 16–17 actuals (estimate vs tracked, whole card, no subtasks)
 

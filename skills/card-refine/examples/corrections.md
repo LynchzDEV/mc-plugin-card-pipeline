@@ -17,3 +17,6 @@ What the owner changed in a shown draft, and the rule it taught.
 | 2026-10-13 | 14znf2fuvcn | refined as new work | duplicate of [ระบบจัดการ Customer ฝั่ง Army](86d4caked), in review | existing work in the same list (any status) is R5 |
 | 2026-10-13 | 14znf2fuvc8 | 8h novel; treated as a new report | agent-level report exists; seller-level aggregation only, 3h | level, not feature: narrower level exists → aggregation ≤ 3h |
 | 2026-10-13 | 14znf2fuvcp | 5h with a spec of every rule | "เสร็จพร้อม log xxx ประเมินไว้รอเทส", 1h | work already built elsewhere → 1h verification, one line |
+| 2026-10-13 | 14znf2fuvcz | 2h | 3h | a port that extends existing screens is 3h, not sized up or down per piece |
+| 2026-10-13 | 14znf2fuvd2 | 8h (page 5 + seam 3) | 3h | a ported report that reuses the existing calculation is one 3h piece; the read seam is an extension, not a second part |
+
