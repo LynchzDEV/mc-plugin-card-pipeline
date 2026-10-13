@@ -96,25 +96,60 @@ export function weightedHours(rows: ScoredRow[]): number {
   return sample.reduce((sum, row) => sum + row.score * row.hours, 0) / weight
 }
 
+export interface PartHours {
+  part: string
+  hours: number
+  label: string | null
+}
+
+export interface PartsResult {
+  perPart: PartHours[]
+  sum: number
+  bucket: number
+}
+
+const PART_ROWS = 3
+
+function anchorTable(rows: ScoredRow[]): string[] {
+  return ['| score | label | repo | hours | source |', '|---|---|---|---|---|', ...rows.map((row) => `| ${row.score.toFixed(2)} | ${row.label} | ${row.repo} | ${row.hours} | ${row.source} |`)]
+}
+
 export function formatAnchors(rows: ScoredRow[]): string {
   if (!rows.some((row) => row.score > 0)) return 'no anchor\nbucket: none'
-  return [
-    '| score | label | repo | hours | source |',
-    '|---|---|---|---|---|',
-    ...rows.map((row) => `| ${row.score.toFixed(2)} | ${row.label} | ${row.repo} | ${row.hours} | ${row.source} |`),
-    '',
-    `bucket: ${fibonacciBucket(weightedHours(rows))}`,
-  ].join('\n')
+  return [...anchorTable(rows), '', `bucket: ${fibonacciBucket(weightedHours(rows))}`].join('\n')
+}
+
+export function splitParts(parts: string): string[] {
+  return parts.split(' | ').map((part) => part.trim()).filter(Boolean)
+}
+
+export function sumParts(rows: AnchorRow[], parts: string[], repo?: string): PartsResult {
+  const perPart = parts.map((part) => {
+    const top = nearestAnchors(rows, part, repo, 1)[0]
+    return top && top.score > 0 ? { part, hours: top.hours, label: top.label } : { part, hours: 0, label: null }
+  })
+  const sum = perPart.reduce((total, part) => total + part.hours, 0)
+  return { perPart, sum, bucket: fibonacciBucket(sum) }
+}
+
+export function formatParts(rows: AnchorRow[], parts: string[], repo?: string): string {
+  const result = sumParts(rows, parts, repo)
+  const tables = parts.flatMap((part) => {
+    const nearest = nearestAnchors(rows, part, repo, PART_ROWS)
+    return [`### ${part}`, ...(nearest.some((row) => row.score > 0) ? anchorTable(nearest) : ['no anchor']), '']
+  })
+  return [...tables, `parts: ${result.perPart.map((part) => part.hours).join(' + ')} = ${result.sum}`, `bucket: ${result.bucket}`].join('\n')
 }
 
 function main(): void {
-  const { values } = parseArgs({ options: { anchors: { type: 'string' }, title: { type: 'string' }, repo: { type: 'string' }, top: { type: 'string', default: '5' } } })
-  if (!values.anchors || !values.title) {
-    process.stderr.write('usage: anchor.ts --anchors <anchors.md> --title "<subtask title or summary>" [--repo <name>] [--top 5]\n')
+  const { values } = parseArgs({ options: { anchors: { type: 'string' }, title: { type: 'string' }, parts: { type: 'string' }, repo: { type: 'string' }, top: { type: 'string', default: '5' } } })
+  if (!values.anchors || (!values.title && !values.parts)) {
+    process.stderr.write('usage: anchor.ts --anchors <anchors.md> (--title "<subtask title or summary>" [--top 5] | --parts "<piece 1> | <piece 2>") [--repo <name>]\n')
     process.exit(2)
   }
-  const rows = nearestAnchors(parseAnchors(readFileSync(values.anchors, 'utf8')), values.title, values.repo, Number(values.top))
-  process.stdout.write(`${formatAnchors(rows)}\n`)
+  const rows = parseAnchors(readFileSync(values.anchors, 'utf8'))
+  const output = values.parts ? formatParts(rows, splitParts(values.parts), values.repo) : formatAnchors(nearestAnchors(rows, values.title!, values.repo, Number(values.top)))
+  process.stdout.write(`${output}\n`)
 }
 
 if (import.meta.main) main()

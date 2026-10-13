@@ -35,7 +35,7 @@ It returns the output block (VERDICT … LINT) and leaves `facts.md`, `comment.m
 ### Lookup tools (in `scripts/`, next to the registry)
 The project-manager and code-architect run these instead of deciding by prose:
 - `where.ts` — which repo owns a table or column for a system word, with its time columns: `bun scripts/where.ts --word <vayu|hermez|order_import…> --repos-root ~/klangtech --registry scripts/repo-registry.json [--json]`
-- `anchor.ts` — nearest anchor rows and the Fibonacci bucket for a subtask: `bun scripts/anchor.ts --anchors examples/anchors.md --title "<subtask title> <summary>" [--repo <name>] [--top 5]`
+- `anchor.ts` — one anchor per piece of work, summed into the Fibonacci bucket for a subtask: `bun scripts/anchor.ts --anchors examples/anchors.md --parts "<piece 1> | <piece 2>" [--repo <name>]` (or `--title "<text>" [--top 5]` for the nearest rows of one title)
 
 ## 4. PROD-LOOKUPS
 - Read `PROD-QUESTIONS` in the package. `none`: report pass with evidence "no production questions".

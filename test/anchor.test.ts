@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { type AnchorRow, fibonacciBucket, formatAnchors, nearestAnchors, parseAnchors, weightedHours } from '../skills/card-refine/scripts/anchor'
+import { type AnchorRow, fibonacciBucket, formatAnchors, nearestAnchors, parseAnchors, splitParts, sumParts, weightedHours } from '../skills/card-refine/scripts/anchor'
 import { tempFile } from './helpers'
 
 const ANCHOR = 'skills/card-refine/scripts/anchor.ts'
@@ -115,6 +115,31 @@ describe('fibonacciBucket', () => {
   })
 })
 
+describe('sumParts', () => {
+  const rows = parseAnchors(FIRST_TABLE)
+
+  test('a page + menu + query piece and a cancel/resend piece sum to 8 + 5 = 13', () => {
+    const result = sumParts(rows, splitParts('หน้าคิวขุด ทั้งร้าน เมนู | ปุ่มยกเลิก ส่งซ้ำ'))
+    expect(result.perPart.map((part) => part.hours)).toEqual([8, 5])
+    expect(result.sum).toBe(13)
+    expect(result.bucket).toBe(13)
+  })
+
+  test('a piece with no matching row contributes 0', () => {
+    const result = sumParts(rows, ['ปุ่มยกเลิก ส่งซ้ำ', 'zzz qqq'])
+    expect(result.perPart[1]).toEqual({ part: 'zzz qqq', hours: 0, label: null })
+    expect(result.sum).toBe(5)
+  })
+
+  test('a single part takes the same top row as --title', () => {
+    const title = 'ช่องค้นหาตามชื่อลูกค้าและเบอร์โทร'
+    const top = nearestAnchors(rows, title, 'klangtech-army')[0]!
+    const result = sumParts(rows, [title], 'klangtech-army')
+    expect(result.perPart).toEqual([{ part: title, hours: top.hours, label: top.label }])
+    expect(result.bucket).toBe(fibonacciBucket(top.hours))
+  })
+})
+
 describe('CLI', () => {
   test('prints the table and a bucket', () => {
     const run = Bun.spawnSync(['bun', ANCHOR, '--anchors', tempFile('anchors.md', FIRST_TABLE), '--title', 'search box by name and phone', '--repo', 'klangtech-army', '--top', '3'])
@@ -123,6 +148,14 @@ describe('CLI', () => {
     expect(output).toContain('| score | label | repo | hours | source |')
     expect(output).toContain('14znf2futr8')
     expect(output.trim().split('\n').at(-1)).toMatch(/^bucket: \d+$/)
+  })
+
+  test('--parts prints one table per piece, the parts line and the bucket', () => {
+    const run = Bun.spawnSync(['bun', ANCHOR, '--anchors', tempFile('anchors.md', FIRST_TABLE), '--parts', 'หน้าคิวขุด ทั้งร้าน เมนู | ปุ่มยกเลิก ส่งซ้ำ', '--repo', 'klangtech-army'])
+    const output = run.stdout.toString()
+    expect(run.exitCode).toBe(0)
+    expect(output.match(/^\| score \|/gm)).toHaveLength(2)
+    expect(output.trim().split('\n').slice(-2)).toEqual(['parts: 8 + 5 = 13', 'bucket: 13'])
   })
 
   test('no row above 0 prints no anchor and exits 0', () => {
