@@ -182,6 +182,12 @@ describe('judged scoring with the stub judge', () => {
     })
   }
 
+  test('the judge prompt keeps stated decisions out of fabricated-value', () => {
+    const key = readKeyFixture('14znf2futr8')
+    judged(key, 'all-yes')
+    expect(readFileSync(promptFiles(cardDir(key.card), 1).at(-1)!, 'utf8')).toContain('NOT a decision the draft states as its own decision')
+  })
+
   test('the prompt shuffles items differently per seed', () => {
     const key = readKeyFixture('14znf2futhy')
     judged(key, 'all-yes')
