@@ -336,3 +336,21 @@ describe('short and tight', () => {
     expect(codes).not.toContain('bare-not-needed')
   })
 })
+
+describe('one-line STOP', () => {
+  const dup = '**log นี้ซ้ำกับ [\\[Army\\] ระบบจัดการ Customer ฝั่ง Army](https://app.clickup.com/t/3845974/86d4caked) ที่ทำอยู่แล้ว ไม่ทำซ้ำครับ**' + MARKER + '\n'
+
+  test('a bold one-line duplicate with the marker passes as STOP', () => {
+    const result = lint(dup, { verdict: 'STOP' })
+    expect(result.codes).toEqual([])
+    expect(result.exitCode).toBe(0)
+  })
+
+  test('the same line without bold fails', () => {
+    expect(lint(dup.replaceAll('**', ''), { verdict: 'STOP' }).codes).toContain('layout-first-line')
+  })
+
+  test('a one-line comment is not accepted for PASS', () => {
+    expect(lint(dup, { verdict: 'PASS' }).codes).toContain('layout-divider')
+  })
+})

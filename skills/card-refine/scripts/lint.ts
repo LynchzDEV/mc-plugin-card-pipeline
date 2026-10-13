@@ -333,8 +333,20 @@ function businessLengthFindings(view: Layout): Finding[] {
   return findings
 }
 
+const ONE_LINE_STOP = new RegExp(`^\\*\\*log นี้.+ครับ\\*\\*${MARKER}${MARKER}$`, 'u')
+
+function oneLineStop(comment: string, verdict: string): Finding[] | null {
+  const lines = comment.split('\n').filter((line) => line.trim())
+  if (verdict !== 'STOP' || lines.length !== 1) return null
+  const line = lines[0]!.trim()
+  if (ONE_LINE_STOP.test(line)) return []
+  return [{ code: 'layout-first-line', evidence: `a one-line STOP comment is one bold line "**log นี้…ครับ**" followed by exactly two U+2063 characters: '${line}'` }]
+}
+
 export function lintComment(comment: string, options: LintOptions): Finding[] {
   const view = layout(comment)
+  const oneLine = oneLineStop(comment, options.verdict)
+  if (oneLine) return [...oneLine, ...wordFindings(comment), ...linkFindings(comment), ...siblingFindings(view)]
   const subtasks = options.subtasks ?? []
   const verdict: Finding[] = firstLineFits(view.firstLine, options.verdict)
     ? []
