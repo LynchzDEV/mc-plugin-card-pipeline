@@ -8,13 +8,13 @@ const FIRST_TABLE = `# Anchors
 
 | subtask | repo | hours | card |
 |---|---|---|---|
-| search box by name + phone with filters and CSV passthrough | klangtech-army | 3 | 14znf2futr8 |
-| agent list page + sidebar entry | klangtech-army | 5 | 86d4cxz32 |
-| Kood Queue shop-wide page + menu + query | klangtech-army | 8 | 14znf2fuv78 |
-| cancel / resend model steps + buttons | klangtech-army | 5 | 14znf2fuv78 |
-| api hook: re-prepare message + quota on resend / cancel | api | 3 | 14znf2fuv78 |
-| button rename + price line + date strip + tooltip | klangtech-army | 5 | 14znf2futry |
-| two company-scoped date reads for Army | api | 3 | 14znf2futry |
+| search box by name + phone with filters and CSV passthrough / ช่องค้นหา ชื่อ เบอร์โทร ตัวกรอง ส่งออก CSV | klangtech-army | 3 | 14znf2futr8 |
+| agent list page + sidebar entry / หน้ารายการเอเจนต์ เมนู | klangtech-army | 5 | 86d4cxz32 |
+| Kood Queue shop-wide page + menu + query / หน้าคิวขุด ทั้งร้าน เมนู | klangtech-army | 8 | 14znf2fuv78 |
+| cancel / resend model steps + buttons / ปุ่มยกเลิก ส่งซ้ำ | klangtech-army | 5 | 14znf2fuv78 |
+| api hook: re-prepare message + quota on resend / cancel / คืนโควตา หักโควตา เตรียมข้อความ ส่งซ้ำ ยกเลิก | api | 3 | 14znf2fuv78 |
+| button rename + price line + date strip + tooltip / เปลี่ยนชื่อปุ่ม ราคา ค่าใช้จ่าย แถบวันที่ tooltip | klangtech-army | 5 | 14znf2futry |
+| two company-scoped date reads for Army / วันที่ล่าสุด ส่งค่าให้ Army | api | 3 | 14znf2futry |
 `
 
 const SECOND_TABLE = `## Sprint 16–17 actuals
@@ -31,7 +31,7 @@ const SECOND_TABLE = `## Sprint 16–17 actuals
 
 describe('parseAnchors', () => {
   test('the first table reads subtask, repo, hours and card', () => {
-    expect(parseAnchors(FIRST_TABLE)[0]).toEqual({ label: 'search box by name + phone with filters and CSV passthrough', repo: 'klangtech-army', hours: 3, source: '14znf2futr8' })
+    expect(parseAnchors(FIRST_TABLE)[0]).toEqual({ label: 'search box by name + phone with filters and CSV passthrough / ช่องค้นหา ชื่อ เบอร์โทร ตัวกรอง ส่งออก CSV', repo: 'klangtech-army', hours: 3, source: '14znf2futr8' })
     expect(parseAnchors(FIRST_TABLE)).toHaveLength(7)
   })
 
@@ -47,9 +47,11 @@ describe('parseAnchors', () => {
 })
 
 describe('nearestAnchors', () => {
-  test('the Thai search-box title ranks the search box row first (all scores tie at 0; hours asc then file order decide)', () => {
+  test('the Thai search-box title ranks the search box row first on a real score', () => {
     const rows = nearestAnchors(parseAnchors(FIRST_TABLE), 'ช่องค้นหาตามชื่อลูกค้าและเบอร์โทร')
-    expect(rows[0]!.label).toBe('search box by name + phone with filters and CSV passthrough')
+    expect(rows[0]!.source).toBe('14znf2futr8')
+    expect(rows[0]!.score).toBeGreaterThan(0)
+    expect(rows[0]!.score).toBeGreaterThan(rows[1]!.score)
   })
 
   test('shared English words rank the closest label first', () => {
@@ -71,6 +73,19 @@ describe('nearestAnchors', () => {
     ]
     expect(nearestAnchors(rows, 'export button').map((row) => row.source)).toEqual(['a', 'b'])
     expect(nearestAnchors(rows, 'export button', 'KLANGTECH-ARMY').map((row) => row.source)).toEqual(['b', 'a'])
+  })
+
+  test('--repo klangtech-army boosts an Army row of the second table through the system mapping', () => {
+    const plain = nearestAnchors(parseAnchors(SECOND_TABLE), 'ตั้งค่า')
+    const boosted = nearestAnchors(parseAnchors(SECOND_TABLE), 'ตั้งค่า', 'klangtech-army')
+    const army = (rows: typeof plain) => rows.find((row) => row.source === '86d4cd3gc')!.score
+    expect(army(boosted)).toBeCloseTo(army(plain) + 0.1)
+    expect(boosted.find((row) => row.source === '86d4cxmt4')!.score).toBe(plain.find((row) => row.source === '86d4cxmt4')!.score)
+  })
+
+  test('--repo api boosts every system mapped to api', () => {
+    const rows = nearestAnchors(parseAnchors(SECOND_TABLE), 'zzz', 'api', 10)
+    expect(rows.filter((row) => row.score > 0).map((row) => row.repo).sort()).toEqual(['HerMEZ', 'MoNi'])
   })
 
   test('top limits the rows returned', () => {
@@ -111,7 +126,7 @@ describe('CLI', () => {
   })
 
   test('no row above 0 prints no anchor and exits 0', () => {
-    const run = Bun.spawnSync(['bun', ANCHOR, '--anchors', tempFile('anchors.md', FIRST_TABLE), '--title', 'ช่องค้นหา'])
+    const run = Bun.spawnSync(['bun', ANCHOR, '--anchors', tempFile('anchors.md', FIRST_TABLE), '--title', 'zzz qqq'])
     expect(run.exitCode).toBe(0)
     expect(run.stdout.toString()).toBe('no anchor\nbucket: none\n')
   })

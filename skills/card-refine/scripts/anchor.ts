@@ -16,6 +16,14 @@ export interface ScoredRow extends AnchorRow {
 export const BUCKETS = [1, 2, 3, 5, 8, 13, 21]
 const REPO_BONUS = 0.1
 const BUCKET_SAMPLE = 3
+export const SYSTEMS_BY_REPO: Record<string, string[]> = {
+  'klangtech-army': ['Army'],
+  api: ['MoNi', 'HerMEZ', 'Portal', 'VAYU'],
+  mahamodo: ['หมอดู'],
+  'klangtech-eiz-mind': ['Eiz'],
+  'klangtech-moni-human': ['MoniHuman'],
+  backoffice: ['Portal'],
+}
 
 function cells(line: string): string[] {
   return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((cell) => cell.trim())
@@ -62,10 +70,16 @@ function jaccard(left: Set<string>, right: Set<string>): number {
   return union ? shared / union : 0
 }
 
+function repoMatches(row: AnchorRow, repo: string | undefined): boolean {
+  if (!repo) return false
+  const wanted = [repo, ...(SYSTEMS_BY_REPO[repo.toLowerCase()] ?? [])].map((name) => name.toLowerCase())
+  return wanted.includes(row.repo.toLowerCase())
+}
+
 export function nearestAnchors(rows: AnchorRow[], title: string, repo?: string, top = 5): ScoredRow[] {
   const wanted = tokens(title)
   return rows
-    .map((row, index) => ({ row: { ...row, score: jaccard(wanted, tokens(row.label)) + (repo && row.repo.toLowerCase() === repo.toLowerCase() ? REPO_BONUS : 0) }, index }))
+    .map((row, index) => ({ row: { ...row, score: jaccard(wanted, tokens(row.label)) + (repoMatches(row, repo) ? REPO_BONUS : 0) }, index }))
     .sort((a, b) => b.row.score - a.row.score || a.row.hours - b.row.hours || a.index - b.index)
     .slice(0, top)
     .map(({ row }) => row)

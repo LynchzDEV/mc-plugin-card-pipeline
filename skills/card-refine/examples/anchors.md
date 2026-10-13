@@ -4,13 +4,13 @@ Approved subtasks and their hours, for estimating.
 
 | subtask | repo | hours | card |
 |---|---|---|---|
-| search box by name + phone with filters and CSV passthrough | klangtech-army | 3 | 14znf2futr8 |
-| agent list page + sidebar entry | klangtech-army | 5 | 86d4cxz32 |
-| Kood Queue shop-wide page + menu + query | klangtech-army | 8 | 14znf2fuv78 |
-| cancel / resend model steps + buttons | klangtech-army | 5 | 14znf2fuv78 |
-| api hook: re-prepare message + quota on resend / cancel | api | 3 | 14znf2fuv78 |
-| button rename + price line + date strip + tooltip | klangtech-army | 5 | 14znf2futry |
-| two company-scoped date reads for Army | api | 3 | 14znf2futry |
+| search box by name + phone with filters and CSV passthrough / ช่องค้นหา ชื่อ เบอร์โทร ตัวกรอง ส่งออก CSV | klangtech-army | 3 | 14znf2futr8 |
+| agent list page + sidebar entry / หน้ารายการเอเจนต์ เมนู | klangtech-army | 5 | 86d4cxz32 |
+| Kood Queue shop-wide page + menu + query / หน้าคิวขุด ทั้งร้าน เมนู | klangtech-army | 8 | 14znf2fuv78 |
+| cancel / resend model steps + buttons / ปุ่มยกเลิก ส่งซ้ำ | klangtech-army | 5 | 14znf2fuv78 |
+| api hook: re-prepare message + quota on resend / cancel / คืนโควตา หักโควตา เตรียมข้อความ ส่งซ้ำ ยกเลิก | api | 3 | 14znf2fuv78 |
+| button rename + price line + date strip + tooltip / เปลี่ยนชื่อปุ่ม ราคา ค่าใช้จ่าย แถบวันที่ tooltip | klangtech-army | 5 | 14znf2futry |
+| two company-scoped date reads for Army / วันที่ล่าสุด ส่งค่าให้ Army | api | 3 | 14znf2futry |
 
 ## Sprint 16–17 actuals (estimate vs tracked, whole card, no subtasks)
 
