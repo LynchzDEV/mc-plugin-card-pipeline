@@ -97,6 +97,7 @@ export function findTables(sources: SchemaSource[], word: string): WhereResult {
   }
   const matches = [...loaders]
     .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => Number(normalise(b).includes(needle)) - Number(normalise(a).includes(needle)))
     .map(([table, loaded]) => {
       const migrated = tableOwner(sources, table)
       const owner = migrated ?? `${loaded[0]!.repo} (by schema)`
@@ -122,6 +123,7 @@ export function formatMarkdown(result: WhereResult): string {
     '|---|---|---|---|---|---|',
     ...rows,
     '',
+    ...(result.matches.length && result.matches[0]!.matchedBy[0] === 'table name' ? [`best: ${result.matches[0]!.table} (${result.matches[0]!.owner}) — a table named after the word beats a table that only carries it in a column`] : []),
     `no schema: ${result.noSchema.join(', ')}`,
     `no match: ${result.noMatch.join(', ')}`,
   ].join('\n')

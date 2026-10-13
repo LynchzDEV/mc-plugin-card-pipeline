@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { findTables } from '../skills/card-refine/scripts/where'
+import { findTables, formatMarkdown } from '../skills/card-refine/scripts/where'
 
 const VAYU = `  create_table "army_vayu_deliveries", id: :uuid, force: :cascade do |t|
     t.datetime "closed_at"
@@ -97,7 +97,17 @@ describe('findTables', () => {
     expect(findTables(sources, 'order_import').matches[0]!.timeColumns).toEqual(['imported_at'])
   })
 
-  test('one row per table, tables alphabetical', () => {
-    expect(findTables(sources, 'vayu').matches.map((row) => row.table)).toEqual(['army_vayu_deliveries', 'core_orders', 'vayu_rebuild_requests'])
+  test('one row per table, tables named after the word first, then alphabetical', () => {
+    expect(findTables(sources, 'vayu').matches.map((row) => row.table)).toEqual(['army_vayu_deliveries', 'vayu_rebuild_requests', 'core_orders'])
   })
+})
+
+test('a table named after the word ranks before a table that only carries it in a column, and markdown names it best', () => {
+  const sources = [
+    { repo: 'klangtech-core', schema: 'create_table "core_orders" do |t|\n  t.string "vayu_order_id"\n  t.timestamps\nend\n' },
+    { repo: 'klangtech-army', schema: 'create_table "army_vayu_deliveries" do |t|\n  t.datetime "closed_at"\n  t.timestamps\nend\n', migrations: ['20261002015824_create_army_vayu_deliveries.rb'] },
+  ]
+  const result = findTables(sources, 'vayu')
+  expect(result.matches.map((match) => match.table)).toEqual(['army_vayu_deliveries', 'core_orders'])
+  expect(formatMarkdown(result)).toContain('best: army_vayu_deliveries (klangtech-army)')
 })
