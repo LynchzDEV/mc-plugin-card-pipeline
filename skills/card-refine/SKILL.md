@@ -19,12 +19,12 @@ For each card:
 1. Fetch the task with the ClickUp get-task tool (`include`: description, custom_fields, attachments, subtasks, linked_tasks) and its comments with get-task-comments.
 2. Save them as `task.json` and `comments.json` under `~/.cache/card-pipeline/cards/<card-id>/` (durable, never /tmp, never inside a repo).
 3. Run `bun ~/.claude/skills/card-refine/scripts/land.ts --task ~/.cache/card-pipeline/cards/<card-id>/task.json --comments ~/.cache/card-pipeline/cards/<card-id>/comments.json --out ~/.cache/card-pipeline/cards/<card-id>/`.
-4. Fetch the other open cards that share this card's tags (ClickUp filter by tag, same list) and write `related.md` into the card folder: `- <name> (<id>) — <status>` per card, excluding this card; write `none` when there are no tags or no siblings.
+4. Write `related.md` into the card folder with two parts. **Siblings:** the other open cards that share this card's tags (ClickUp filter by tag, same list): `- <name> (<id>) — <status>` per card, excluding this card; `none` when there are none. **Existing work:** search the same list for cards of any status (open, review, post review, closed) whose title or description matches 2–3 keywords from this card's title (the screen or feature noun: ลูกค้า, Customer, คิวขุด, Kood, KToken, Export …; ClickUp search or filter_tasks with include_closed), and list each hit the same way with its status and last-updated date; `none` when nothing matches. The project-manager treats a hit that already covers the ask as a duplicate (R5) and a hit that already built it as verification only (1 hour).
 5. Open every file in `shots/` yourself; a `.missing` file means the download failed twice.
 6. Report pass with the card folder path as evidence.
 
 ## 3. PROJECT-MANAGER
-A flow node, not the session. The job runs the `project-manager` agent with:
+When several cards were handed over together, every card is landed and refined before any card reaches APPROVE or SEND, so the packages can name each other. A flow node, not the session. The job runs the `project-manager` agent with:
 - `--card ~/.cache/card-pipeline/cards/<card-id>/` (the folder from the LANDS evidence; `prod.md` inside it when present),
 - `--examples ~/.claude/skills/card-refine/examples`,
 - `--registry ~/.claude/skills/card-refine/scripts/repo-registry.json`,
@@ -60,7 +60,7 @@ The owner answers one of three:
 NEEDS-INVESTIGATION is never shown for approval and never posted; step 4 handles it.
 
 ## 6. SEND
-Only after the owner's yes, in this order:
+Only after the owner's yes, and only when every card of the batch has an approved package (the owner reads them together; a sibling learnt from a later card changes the earlier package before anything is posted). One comment per card: never a follow-up post, never a separate question post, never a correction post. In this order:
 1. Post the comment, or replace our own earlier comment in place: one containing two U+2063 characters (adjacent or not), or ending with an old footer "[🤖 Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]" or "[🌚Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]". Several candidates: replace the newest and show the others to the owner. Never post a second copy; never overwrite any other bot or person's comment.
 2. Before writing children, verify each proposed subtask: `summary` is one independently useful business outcome, and `hours` is a Fibonacci estimate (1, 2, 3, 5, 8 or 13). A repository, a layer or a dev note is not that outcome. Do not create a proposed child that fails this check, and report it. Do not delete subtasks already on the card.
 3. PASS with approved children: read the card's existing subtasks; update the one with the same title, create only the missing ones, each named `[<repo>] <title>` with Time estimate = hours × 60 minutes. Clear the parent's estimate only when those children were written. PASS without subtasks and a numeric ESTIMATE: set the card's Time estimate and create no children. Any other verdict: create no subtasks and leave estimates untouched.
