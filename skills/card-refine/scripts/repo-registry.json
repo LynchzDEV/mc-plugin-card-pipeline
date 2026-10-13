@@ -1,0 +1,21 @@
+{
+  "repos": [
+    {"name": "klangtech-core", "project": "Domains", "assignable": true},
+    {"name": "klangtech-admin", "project": "Domains", "assignable": true},
+    {"name": "klangtech-super-admin", "project": "Domains", "assignable": true},
+    {"name": "klangtech-army", "project": "Domains", "assignable": true},
+    {"name": "klangtech-eiz-mind", "project": "Domains", "assignable": true},
+    {"name": "klangtech-moni-human", "project": "Domains", "assignable": true},
+    {"name": "klangtech-andy-engine", "project": "Domains", "assignable": true},
+    {"name": "klangtech-kchat", "project": "Domains", "assignable": true, "note": "not checked out locally"},
+    {"name": "api", "project": "Old server", "assignable": true, "note": "api's own code only (api/app, api/lib, api/config); pulling a Domains engine into api is a mechanical step, never a billable slice"},
+    {"name": "backoffice", "project": "Old server", "assignable": true, "note": "old screens; usable as the parity reference"},
+    {"name": "mahamodo", "project": "หมอดู", "assignable": true},
+    {"name": "hermez-chrome-extension", "project": "shared", "assignable": true, "note": "one HerMEZ feature, used by both Domains and Old server"},
+    {"name": "kchat-go", "project": "shared", "assignable": true},
+    {"name": "kchat", "project": "shared", "assignable": true}
+  ],
+  "excluded": ["visualizer"],
+  "unassigned": ["klangtech-andy"],
+  "clickup": {"nestedSubtasksSupported": false}
+}

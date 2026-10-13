@@ -1,14 +1,16 @@
 {
   "id": "card-pipeline",
   "name": "Card pipeline",
-  "version": "0.3.7",
-  "description": "Ready to use: the biz-gate agent and card-refine skill tuned for KlangTech ClickUp cards, plus the card pipeline flow for Studio. No setup.",
+  "version": "0.5.0",
+  "description": "Refines one KlangTech ClickUp card at a time: the session lands the card, the project-manager agent investigates through code-architect and asks production only through the session (production-investigator), a script lints the Thai comment and a cross-family advisor flags problems without blocking, then the owner approves on one screen and the session posts and reads back. Nothing is written to ClickUp, code or production until the owner says yes; every owner edit becomes an example the next run reads.",
   "pluginApi": 2,
   "runtime": "isolated",
   "permissions": {},
   "contributes": {
     "agents": [
-      "agents/biz-gate.md"
+      "agents/project-manager.md",
+      "agents/code-architect.md",
+      "agents/production-investigator.md"
     ],
     "skills": [
       "skills/card-refine"

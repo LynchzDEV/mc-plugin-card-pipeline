@@ -1,217 +1,70 @@
 {
   "id": "card-pipeline",
-  "name": "Card pipeline (steps after the business gate not yet tested)",
-  "entry": "biz-gate",
+  "name": "Card pipeline: project-manager refinement",
+  "entry": "lands",
   "nodes": [
     {
-      "id": "biz-gate",
-      "title": "Business gate (biz-gate)",
+      "id": "lands",
+      "title": "Land the card",
       "kind": "task",
-      "agent": {
-        "role": "plan",
-        "engine": "claude",
-        "model": "opus"
-      },
-      "position": {
-        "x": 0,
-        "y": 200
-      },
-      "instructions": "Run the biz-gate agent on the ClickUp card named in the request, following the card-refine skill steps 1-5 (evidence first, one folder per card, production check for bugs). Do not post anything to ClickUp. Return the biz-gate output in full. End with pass only when VERDICT is PASS and CONFIDENCE is HIGH; otherwise blocked, with the draft and checks as evidence so a person can decide."
+      "agent": { "role": "plan", "engine": "session" },
+      "skills": [],
+      "position": { "x": 0, "y": 200 },
+      "instructions": "Follow the card-refine skill, section 2 LANDS, for the ClickUp card named in the request: fetch the task and its comments, save task.json and comments.json under ~/.cache/card-pipeline/cards/<card-id>/, run land.ts, open every shot. Report pass with the card folder path as evidence. Write nothing to ClickUp."
     },
     {
-      "id": "tech-design",
-      "title": "Tech design review",
+      "id": "project-manager",
+      "title": "Project manager: investigate, decide, draft",
       "kind": "task",
-      "agent": {
-        "role": "plan",
-        "engine": "claude",
-        "model": "opus"
-      },
-      "position": {
-        "x": 300,
-        "y": 0
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Review how to build the card that passed the business gate (its output is upstream). Read the code read-only. Cover: what existing code to reuse, data and migration changes, whether existing callers and data keep working, performance. Name files and lines. If the business information is not enough to decide, end blocked with each missing point as evidence."
+      "agent": { "role": "execute", "engine": "claude", "model": "opus" },
+      "skills": [],
+      "maxVisits": 3,
+      "position": { "x": 300, "y": 200 },
+      "instructions": "Run the project-manager agent (Agent tool, subagent_type: project-manager) with --card <the card folder from the lands evidence> --examples ~/.claude/skills/card-refine/examples --registry ~/.claude/skills/card-refine/scripts/repo-registry.json --architect ~/.claude/agents/code-architect.md. When prod.md exists in the card folder, tell the agent to use it. Return the agent's package.md verbatim. Pass when every section of the output block is present (VERDICT, CONFIDENCE, CHECKS, RULES, PROJECT, SYSTEM, SPRINT, ESTIMATE, COMMENT, SUBTASKS, REPORT, PROD-QUESTIONS, LINT). Blocked only on a tool or script error; name it. Do not write to ClickUp, code or production."
     },
     {
-      "id": "architecture",
-      "title": "Architecture review",
+      "id": "prod-lookups",
+      "title": "Production lookups",
       "kind": "task",
-      "agent": {
-        "role": "review",
-        "engine": "codex"
-      },
-      "position": {
-        "x": 300,
-        "y": 200
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Review where the change belongs: which repo and engine own it, whether it stays inside one project, the order of changes across repos, and whether it follows the engine layout and dependency rules the team documents. Read the code read-only. Name files and lines. If the business information is not enough to decide, end blocked with each missing point as evidence."
+      "agent": { "role": "plan", "engine": "session" },
+      "skills": [],
+      "position": { "x": 600, "y": 200 },
+      "instructions": "Follow the card-refine skill, section 4 PROD-LOOKUPS. PROD-QUESTIONS is none: pass with evidence \"no production questions\". Otherwise run the production-investigator agent on prod-questions.md and the card folder, let it write prod.md, and report fail with summary \"new facts in prod.md\" so the project-manager runs again."
     },
     {
-      "id": "ui-test",
-      "title": "UI and testing review",
+      "id": "refinement-advisor",
+      "title": "Refinement advisor (cross-family)",
       "kind": "task",
-      "agent": {
-        "role": "review",
-        "engine": "grok"
-      },
-      "position": {
-        "x": 300,
-        "y": 400
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Review the screens and the test plan: which existing sibling screen to copy (layout, fields, journey), what to test (specs, system specs), and what test data or account is needed. Read the code read-only. Name files and lines. If the business information is not enough to decide, end blocked with each missing point as evidence."
+      "agent": { "role": "review", "engine": "codex", "model": "gpt-6-astra" },
+      "skills": [],
+      "position": { "x": 900, "y": 200 },
+      "instructions": "Read card.md, facts.md and the project-manager package (package.md) in the card folder from the upstream evidence. Check only this hard-fail list: a number, price, policy or formula with no source in the card, the owner's words or the code; a numbered item dropped or disposed twice; a question the code or a screenshot answers; a question about priority or urgency; a [label] not in the repo registry; requested scope marked ไม่ต้องทำ without proof it exists or was not asked; ต้นเหตุ not supported by the cited evidence. Output at most 5 findings, each with its evidence, or the single line \"no findings\". One pass, no loop, no rewriting. Always end pass; evidence = the findings or 'no findings'."
     },
     {
-      "id": "join-reviews",
-      "title": "Reviews in",
-      "kind": "join",
-      "agent": {
-        "role": "execute"
-      },
-      "position": {
-        "x": 600,
-        "y": 200
-      },
-      "instructions": "Collect the three design reviews."
-    },
-    {
-      "id": "plan",
-      "title": "Plan",
-      "kind": "plan",
-      "agent": {
-        "role": "plan",
-        "engine": "claude",
-        "model": "opus"
-      },
-      "position": {
-        "x": 850,
-        "y": 200
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Merge the three reviews into a design brief (decisions, open questions, risks, steps that need a person's OK), then write the implementation plan: tasks with the files each owns, dependencies and acceptance criteria. Group independent tasks into 2-4 parallel paths that never share a file when that helps. Steps that cannot be undone (production data, money, messages to customers, push, land) are marked as waiting for a person. Do not modify code. If an upstream check failed, fix every finding it lists."
-    },
-    {
-      "id": "verify-plan",
-      "title": "Verify plan",
-      "kind": "verify-plan",
-      "agent": {
-        "role": "review",
-        "engine": "codex"
-      },
-      "position": {
-        "x": 1100,
-        "y": 200
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Verify the plan against the card, the design brief and the actual code: every task is testable, no two paths touch the same file, irreversible steps wait for a person. Pass only if the plan is complete and executable; otherwise fail with each gap."
-    },
-    {
-      "id": "implement",
-      "title": "Implement",
-      "kind": "implement",
-      "agent": {
-        "role": "execute",
-        "engine": "glm"
-      },
-      "position": {
-        "x": 1350,
-        "y": 200
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Implement the verified plan in this workspace, test first. Follow the repository's conventions. Run the specs for the files you touched. Do not commit, push or touch production. If an upstream review failed, fix every finding it lists. Done means the acceptance concerns hold for the repo's project (specs pass and run clean, nothing lost on the remote, the engine boots on its own where it is an engine, migrations only change schema, no needless recurring jobs, names say what they are); report each as PASS / FAIL / N/A with the evidence command."
-    },
-    {
-      "id": "review",
-      "title": "Review (cross-family)",
-      "kind": "review",
-      "agent": {
-        "role": "review",
-        "engine": "codex"
-      },
-      "position": {
-        "x": 1600,
-        "y": 200
-      },
-      "instructions": "NOT YET TESTED on real cards (card-pipeline 0.1.0): follow these instructions, but report anything that does not fit what you find. Independently review the implementation against the verified plan and the acceptance concerns. Inspect the actual diff and relevant files, run the relevant specs. Pass only when no blocking finding remains and every concern is PASS or N/A with evidence; otherwise fail with specific findings. Done means the acceptance concerns hold for the repo's project (specs pass and run clean, nothing lost on the remote, the engine boots on its own where it is an engine, migrations only change schema, no needless recurring jobs, names say what they are); report each as PASS / FAIL / N/A with the evidence command."
-    },
-    {
-      "id": "report",
-      "title": "Report",
+      "id": "approve",
+      "title": "Owner approves",
       "kind": "task",
-      "agent": {
-        "role": "review",
-        "engine": "claude",
-        "model": "opus"
-      },
-      "position": {
-        "x": 1850,
-        "y": 200
-      },
-      "instructions": "Write the run report for the session: the card (linked by name) and its business-gate verdict, the design brief in short, what was built (files, rounds), a table with one row per acceptance concern (PASS / FAIL / N/A and the evidence command), and anything waiting on a person. Nothing is pushed or landed. End pass."
+      "agent": { "role": "plan", "engine": "session" },
+      "skills": [],
+      "position": { "x": 1200, "y": 200 },
+      "instructions": "Follow the card-refine skill, section 5 APPROVE: show the owner the one approval screen (verdict, confidence, the comment as it would be posted, subtasks with hours and sprint, the refinement-advisor findings, the lint output, the package path) and take yes, edit, or send back with a note. Save an edit or a send-back to the examples before anything else. Pass only on the owner's yes, with the approved comment as evidence."
+    },
+    {
+      "id": "send",
+      "title": "Send to ClickUp and read back",
+      "kind": "task",
+      "agent": { "role": "plan", "engine": "session" },
+      "skills": [],
+      "position": { "x": 1500, "y": 200 },
+      "instructions": "Follow the card-refine skill, section 6 SEND, for the approved card: post or replace our comment, set Planning to the latest AI sprint on the card and every subtask, create or update subtasks by title with hours, clear the parent estimate when subtasks exist, then read everything back. Report pass with the readback as evidence; report what did not save."
     }
   ],
   "edges": [
-    {
-      "source": "biz-gate",
-      "target": "tech-design",
-      "outcome": "pass"
-    },
-    {
-      "source": "biz-gate",
-      "target": "architecture",
-      "outcome": "pass"
-    },
-    {
-      "source": "biz-gate",
-      "target": "ui-test",
-      "outcome": "pass"
-    },
-    {
-      "source": "tech-design",
-      "target": "join-reviews",
-      "outcome": "pass"
-    },
-    {
-      "source": "architecture",
-      "target": "join-reviews",
-      "outcome": "pass"
-    },
-    {
-      "source": "ui-test",
-      "target": "join-reviews",
-      "outcome": "pass"
-    },
-    {
-      "source": "join-reviews",
-      "target": "plan",
-      "outcome": "pass"
-    },
-    {
-      "source": "plan",
-      "target": "verify-plan",
-      "outcome": "pass"
-    },
-    {
-      "source": "verify-plan",
-      "target": "implement",
-      "outcome": "pass"
-    },
-    {
-      "source": "verify-plan",
-      "target": "plan",
-      "outcome": "fail"
-    },
-    {
-      "source": "implement",
-      "target": "review",
-      "outcome": "pass"
-    },
-    {
-      "source": "review",
-      "target": "implement",
-      "outcome": "fail"
-    },
-    {
-      "source": "review",
-      "target": "report",
-      "outcome": "pass"
-    }
+    { "source": "lands", "target": "project-manager", "outcome": "pass" },
+    { "source": "project-manager", "target": "prod-lookups", "outcome": "pass" },
+    { "source": "prod-lookups", "target": "project-manager", "outcome": "fail" },
+    { "source": "prod-lookups", "target": "refinement-advisor", "outcome": "pass" },
+    { "source": "refinement-advisor", "target": "approve", "outcome": "pass" },
+    { "source": "approve", "target": "send", "outcome": "pass" }
   ]
 }
