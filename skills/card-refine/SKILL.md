@@ -72,5 +72,13 @@ The G1 loop, owned by the session. Nothing is posted.
 6. Allowed changes between rounds: the project-manager prompt, an example, an anchor, the lint. Forbidden: any new gate or node.
 7. Every round runs all four cards on the same prompt, including the ones already at 100: a rule that fixes one card can break another, and a card that regresses is a finding like any other. Change the prompt only between rounds. The gate is two consecutive full rounds with every card ≥95 and no prompt change in between; cap 8 rounds, then report what remains with the per-item misses. Read the transcripts whenever a score moves.
 
+### Loop scripts (shipped in `scripts/loop/`)
+Set `CARD_PIPELINE_ROOT` (the plugin checkout) and optionally `CARD_PIPELINE_LOOP` (the durable loop dir, default `~/.cache/card-pipeline-loop`, holding `keys/`, `examples-minus/`, `rounds/`). Then:
+- `scripts/loop/round-run.sh <round> [card …]` runs the project-manager headlessly (`claude -p`, Opus) on every card in parallel, archives each card's outputs under `rounds/<round>/<card>/`, and scores them (`JUDGE_RUNS=3`).
+- `scripts/loop/round-score.sh <round> [card …]` scores already-archived packages and prints the table plus every judge item that was not yes.
+- `scripts/loop/round-archive.sh <round> <card>` moves one finished card's outputs into the round dir and frees the card folder.
+- `scripts/loop/loop-status.sh` prints the rounds × cards matrix.
+Freeze the prompt per round (the runner copies `agents/project-manager.md` into the round dir); change prompts or examples only between rounds.
+
 ## 8. Report
 A table: card (linked by name), verdict, confidence, approved / edited / sent back, estimate or subtask hours, sprint, and anything that did not save or stopped at a limit.
