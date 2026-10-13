@@ -244,9 +244,15 @@ function numberedFindings(comment: string, items: number, subItems: string[]): F
 }
 
 function hoursFindings(comment: string, subtasks: LintSubtask[]): Finding[] {
-  const findings: Finding[] = subtasks
-    .filter((subtask) => subtask.hours !== null && subtask.hours !== undefined && !FIBONACCI_HOURS.includes(subtask.hours))
-    .map((subtask) => ({ code: 'hours-not-fibonacci', evidence: `subtask '${subtask.title}' has ${subtask.hours}h; hours are 1/2/3/5/8/13` }))
+  const findings: Finding[] = subtasks.flatMap((subtask): Finding[] => {
+    if (subtask.hours === null || subtask.hours === undefined) {
+      return [{ code: 'hours-not-fibonacci', evidence: `subtask '${subtask.title}' has no hours; every subtask is 1/2/3/5/8/13` }]
+    }
+    if (!FIBONACCI_HOURS.includes(subtask.hours)) {
+      return [{ code: 'hours-not-fibonacci', evidence: `subtask '${subtask.title}' has ${subtask.hours}h; hours are 1/2/3/5/8/13` }]
+    }
+    return []
+  })
   const estimate = comment.split('\n').find((line) => line.includes(ESTIMATE_LINE))
   const hours = estimate ? /(\d+(?:\.\d+)?)\s*ชั่วโมง/.exec(estimate.slice(estimate.indexOf(ESTIMATE_LINE) + ESTIMATE_LINE.length)) : null
   if (hours && !FIBONACCI_HOURS.includes(Number(hours[1]))) findings.push({ code: 'hours-not-fibonacci', evidence: `the estimate line says ${hours[1]} hours; hours are 1/2/3/5/8/13` })

@@ -1,6 +1,6 @@
 # Card pipeline — Mission Control plugin (KlangTech)
 
-Takes one KlangTech ClickUp card. In about ten minutes the owner sees a Thai refinement comment in the owner's voice, subtasks labelled `[<repo>]` with Fibonacci hours (13 at most) on the latest AI sprint, and an English report for developers. The owner approves or edits; the session posts and reads back. Any answer the code, the old screen (backoffice) or production can give is looked up, never asked.
+Takes one KlangTech ClickUp card. In about ten minutes the owner sees a Thai refinement comment in the owner's voice, Fibonacci hours (13 at most) on the latest AI sprint, and an English report for developers. A subtask is created only when the task is too big and the child is one independently useful business outcome with its own estimate. A repository, a layer or a dev note is not one. One outcome that spans repositories keeps a single estimate on the card. The owner approves or edits; the session posts and reads back. Any answer the code, the old screen (backoffice) or production can give is looked up, never asked.
 
 ## The map
 
@@ -19,7 +19,7 @@ Reversible work runs without the owner. Nothing is written to ClickUp, code or p
 | Role | Runs as | Model | Produces | Never |
 |---|---|---|---|---|
 | session (LANDS, PROD, APPROVE, SEND) | the owner's Claude Code session, In Session flow steps, skill `card-refine` | — | the card folder, `prod.md`, the approval screen, ClickUp writes with readback | drafts the comment |
-| project-manager | `agents/project-manager.md`, one per card | opus | ask list, verdict, Thai comment, subtasks with hours, English report, production questions | writes to ClickUp, runs production queries, edits code |
+| project-manager | `agents/project-manager.md`, one per card | opus | ask list, verdict, Thai comment, one estimate or business-value subtasks with hours, English report, production questions | writes to ClickUp, runs production queries, edits code |
 | code-architect | `agents/code-architect.md`, called by the project-manager | opus | `facts.md`: per ask, status, evidence `file:line`, repo, what exists today, the old screen, size signals; root cause for bugs | hours, Thai prose, questions to the owner |
 | production-investigator | `agents/production-investigator.md`, called by the session | sonnet | `prod.md`: per question, status, query, result | anything but read-only SELECT; whole-table scans; more than 10 queries |
 | refinement-advisor | flow step, cross-family | codex `gpt-6-astra` | at most 5 findings with evidence, or "no findings"; always pass | blocking, rewriting |
@@ -37,7 +37,7 @@ Mission Control copies the three agents and the `card-refine` skill (with its sc
 - The `inv-prod` skill and production access, for production lookups.
 
 ## Use
-Run the **Card pipeline** flow in Studio with a card link, or say "refine `<card link>`" in a session. The session lands the card; the project-manager job investigates and drafts; production questions, if any, come back to your session (your permission prompt guards every production access); the advisor's findings and the lint output ride to one approval screen. Answer yes, edit, or "send back with: …". Only after yes does the session post the comment, set the sprint, create the subtasks and read everything back.
+Run the **Card pipeline** flow in Studio with a card link, or say "refine `<card link>`" in a session. The session lands the card; the project-manager job investigates and drafts; production questions, if any, come back to your session (your permission prompt guards every production access); the advisor's findings and the lint output ride to one approval screen. Answer yes, edit, or "send back with: …". Only after yes does the session post the comment, set the sprint, create approved business-value subtasks and read everything back. It does not delete subtasks the card already had.
 
 ## What changed in 0.5.0
 - `biz-gate` is replaced by `project-manager`, one author per card with two nested helpers: `code-architect` (code facts with file:line) and `production-investigator` (read-only production answers, called by the session so the owner's prompt guards it).

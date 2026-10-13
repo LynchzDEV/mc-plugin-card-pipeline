@@ -38,7 +38,7 @@
       "agent": { "role": "review", "engine": "codex", "model": "gpt-6-astra" },
       "skills": [],
       "position": { "x": 900, "y": 200 },
-      "instructions": "Read card.md, facts.md and the project-manager package (package.md) in the card folder from the upstream evidence. Check only this hard-fail list: a number, price, policy or formula with no source in the card, the owner's words or the code; a numbered item dropped or disposed twice; a question the code or a screenshot answers; a question about priority or urgency; a [label] not in the repo registry; requested scope marked ไม่ต้องทำ without proof it exists or was not asked; ต้นเหตุ not supported by the cited evidence. Output at most 5 findings, each with its evidence, or the single line \"no findings\". One pass, no loop, no rewriting. Always end pass; evidence = the findings or 'no findings'."
+      "instructions": "Read card.md, facts.md and the project-manager package (package.md) in the card folder from the upstream evidence. Check only this hard-fail list: a number, price, policy or formula with no source in the card, the owner's words or the code; a numbered item dropped or disposed twice; a question the code or a screenshot answers; a question about priority or urgency; a [label] not in the repo registry; requested scope marked ไม่ต้องทำ without proof it exists or was not asked; ต้นเหตุ not supported by the cited evidence; a proposed subtask that is only a repository, a layer or a dev note rather than one independently useful business outcome; a subtask with no Fibonacci hour estimate. Output at most 5 findings, each with its evidence, or the single line \"no findings\". One pass, no loop, no rewriting. Always end pass; evidence = the findings or 'no findings'."
     },
     {
       "id": "approve",
@@ -56,7 +56,7 @@
       "agent": { "role": "plan", "engine": "session" },
       "skills": [],
       "position": { "x": 1500, "y": 200 },
-      "instructions": "Follow the card-refine skill, section 6 SEND, for the approved card: post or replace our comment, set Planning to the latest AI sprint on the card and every subtask, create or update subtasks by title with hours, clear the parent estimate when subtasks exist, then read everything back. Report pass with the readback as evidence; report what did not save."
+      "instructions": "Follow the card-refine skill, section 6 SEND, for the approved card: post or replace our comment, create or update only proposed subtasks that each have one independently useful business outcome and a Fibonacci hour estimate, do not delete existing subtasks the package does not list, clear the parent estimate only when those children were written, then set Planning to the latest AI sprint on the card and every subtask, and read everything back. Report pass with the readback as evidence; report what did not save."
     }
   ],
   "edges": [

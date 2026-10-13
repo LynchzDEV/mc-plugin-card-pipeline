@@ -111,8 +111,9 @@ describe('mechanical hard fails', () => {
     expect(codes(mechanical(futhy, packageFromKey(futhy, { comment })))).toContain('verdict-inconsistent')
   })
 
-  test('one subtask where the key has two earns no count points', () => {
-    const result = mechanical(fuv78, packageFromKey(fuv78, { subtasks: [fuv78.subtasks[0]!] }))
+  test('a child where the key has none earns no count or repo points', () => {
+    const child = { repo: 'klangtech-army', title: 'หน้าคิว', items: [], hours: 8 }
+    const result = mechanical(fuv78, packageFromKey(fuv78, { subtasks: [child] }))
     expect(result.parts.subtasks.count).toBe(0)
     expect(result.parts.subtasks.repos).toBe(0)
   })
@@ -123,21 +124,31 @@ describe('mechanical hard fails', () => {
     expect(codes(mechanical(futr8, packageFromKey(futr8, { comment })))).toContain('too-long')
   })
 
-  test('numbered intent compares item sets, not titles', () => {
-    const swapped = futry.subtasks.map((subtask, index) => ({ ...subtask, title: index === 0 ? 'หน้าจอ Army (ข้อ 1, 2)' : subtask.title }))
-    expect(mechanical(futry, packageFromKey(futry, { subtasks: swapped })).parts.subtasks.intent).toBe(0)
+  test('a repository split does not match a one-outcome key', () => {
+    const comment = futry.comment.replace(/\n- \*\*ประมาณการจำนวนชั่วโมง:\*\*[^\n]*/, '')
+    const subtasks = [
+      { repo: 'klangtech-army', title: 'หน้าจอ Army (ข้อ 1, 2, 4)', items: ['1', '2', '4'], hours: 5 },
+      { repo: 'api', title: 'วันที่จากระบบเดิม (ข้อ 3.2, 3.4)', items: ['3.2', '3.4'], hours: 3 },
+    ]
+    const result = mechanical(futry, packageFromKey(futry, { comment, subtasks }))
+    expect(result.parts.subtasks.count).toBe(0)
+    expect(result.parts.subtasks.intent).toBe(0)
   })
 
   test('a subtask line without its sprint is subtask-unparseable', () => {
-    const pack = packageFromKey(fuv78).replaceAll(` — ${fuv78.sprint}`, '')
+    const child = { repo: 'klangtech-army', title: 'ผลลัพธ์ที่แยกได้', items: [] as string[], hours: 5 }
+    const pack = packageFromKey(fuv78, { subtasks: [child] }).replaceAll(` — ${fuv78.sprint}`, '')
     const result = mechanical(fuv78, pack)
     expect(codes(result)).toContain('subtask-unparseable')
     expect(result.score).toBe(0)
   })
 
   test('3.5 hours on a subtask fails lint', () => {
-    const subtasks = fuv78.subtasks.map((subtask, index) => ({ ...subtask, hours: index === 0 ? 3.5 : subtask.hours }))
-    expect(codes(mechanical(fuv78, packageFromKey(fuv78, { subtasks })))).toContain('lint')
+    const comment = futr8.comment.replace('- **ประมาณการจำนวนชั่วโมง:** 3 ชั่วโมง (ช่องค้นหาตามชื่อและเบอร์โทร, ให้ผลค้นหาคงอยู่เมื่อเปลี่ยนตัวกรอง เปลี่ยนหน้า และส่งออก CSV, รวมชุดทดสอบ) ครับ', '- งานของช่องค้นหาอยู่ในการ์ดย่อยครับ')
+    const subtasks = [{ repo: 'klangtech-army', title: 'ช่องค้นหา', items: [], hours: 3.5 }]
+    const result = mechanical(futr8, packageFromKey(futr8, { comment, subtasks }))
+    expect(codes(result)).toContain('lint')
+    expect(result.hardFails.map((fail) => fail.evidence).join('\n')).toContain('hours-not-fibonacci')
   })
 
   test('an estimate two buckets off earns half', () => {
@@ -156,7 +167,7 @@ describe('judged scoring with the stub judge', () => {
       expect(result.hardFails).toEqual([])
       expect(result.score).toBe(100)
       expect(result.judgeRuns).toBe(2)
-      expect(result.empty).toEqual({ '14znf2futhy': ['estimate'], '14znf2futr8': ['subtasks.intent'] }[card as string] ?? [])
+      expect(result.empty).toEqual({ '14znf2futhy': ['estimate'], '14znf2futr8': ['subtasks.intent'], '14znf2fuv78': ['subtasks.intent'] }[card as string] ?? [])
       expect(promptFiles(cardDir(card), 1).length).toBeGreaterThan(0)
       expect(promptFiles(cardDir(card), 2).length).toBeGreaterThan(0)
     })

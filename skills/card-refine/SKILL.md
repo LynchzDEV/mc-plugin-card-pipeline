@@ -35,7 +35,7 @@ It returns the output block (VERDICT … LINT) and leaves `facts.md`, `comment.m
 ### Lookup tools (in `scripts/`, next to the registry)
 The project-manager and code-architect run these instead of deciding by prose:
 - `where.ts` — which repo owns a table or column for a system word, with its time columns: `bun scripts/where.ts --word <vayu|hermez|order_import…> --repos-root ~/klangtech --registry scripts/repo-registry.json [--json]`
-- `anchor.ts` — one anchor per piece of work, summed into the Fibonacci bucket for a subtask: `bun scripts/anchor.ts --anchors examples/anchors.md --parts "<piece 1> | <piece 2>" [--repo <name>]` (or `--title "<text>" [--top 5]` for the nearest rows of one title)
+- `anchor.ts` — one anchor per piece of work, summed into the Fibonacci bucket for one outcome (the card, or a business-value child): `bun scripts/anchor.ts --anchors examples/anchors.md --parts "<piece 1> | <piece 2>" [--repo <name>]` (or `--title "<text>" [--top 5]` for the nearest rows of one title)
 
 ## 4. PROD-LOOKUPS
 - Read `PROD-QUESTIONS` in the package. `none`: report pass with evidence "no production questions".
@@ -47,7 +47,7 @@ The project-manager and code-architect run these instead of deciding by prose:
 Show the owner one screen per card:
 - verdict and confidence,
 - the comment exactly as it would be posted (`comment.md`),
-- the subtasks with repo label, hours and sprint,
+- the subtasks, each with its business outcome, repo label, hours and sprint, or none when the card is one outcome,
 - the refinement-advisor findings (or "no findings"),
 - the lint output (`lint.txt`),
 - the path of `package.md` for the full report.
@@ -62,10 +62,11 @@ NEEDS-INVESTIGATION is never shown for approval and never posted; step 4 handles
 ## 6. SEND
 Only after the owner's yes, in this order:
 1. Post the comment, or replace our own earlier comment in place: one containing two U+2063 characters (adjacent or not), or ending with an old footer "[🤖 Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]" or "[🌚Biz ยังไม่ต้อบตอบ อันนี้บอทจ้า]". Several candidates: replace the newest and show the others to the owner. Never post a second copy; never overwrite any other bot or person's comment.
-2. PASS with subtasks: read the card's existing subtasks; update the one with the same title, create only the missing ones, each named `[<repo>] <title>` with Time estimate = hours × 60 minutes. Clear the parent's estimate when subtasks exist. PASS without subtasks and a numeric ESTIMATE: set the card's Time estimate. Any other verdict: create no subtasks and leave estimates untouched.
-3. PASS, NEEDS-INFO and ASK-HUMAN: after step 2, set Planning (custom field `1769d214-d88b-413e-b56c-45fb86f454cb`) to the latest AI sprint on the card and on every subtask, including the ones step 2 just created. Read the option live: `{{mc:mctl}} plugin call clickup-board board.load --params '{"boardId":"<board id>"}' --json` → `fields` → "Planning" → `options`, with the board id from `{{mc:mctl}} plugin call clickup-board boards.list --json` (the saved board whose folder is `~/klangtech`, or the only one). STOP: leave Planning unchanged.
-4. A card whose `fields.json.parent` is set is itself a subtask: create its subtasks anyway and report the readback (nested subtasks were created successfully on 2026-10-12 for 14znf2futry).
-5. Read everything back and report what saved: the comment present once with the two U+2063 characters, Planning on the card and on each subtask, the subtasks and their estimates. A partial write is reported from the readback.
+2. Before writing children, verify each proposed subtask: `summary` is one independently useful business outcome, and `hours` is a Fibonacci estimate (1, 2, 3, 5, 8 or 13). A repository, a layer or a dev note is not that outcome. Do not create a proposed child that fails this check, and report it. Do not delete subtasks already on the card.
+3. PASS with approved children: read the card's existing subtasks; update the one with the same title, create only the missing ones, each named `[<repo>] <title>` with Time estimate = hours × 60 minutes. Clear the parent's estimate only when those children were written. PASS without subtasks and a numeric ESTIMATE: set the card's Time estimate and create no children. Any other verdict: create no subtasks and leave estimates untouched.
+4. PASS, NEEDS-INFO and ASK-HUMAN: after step 3, set Planning (custom field `1769d214-d88b-413e-b56c-45fb86f454cb`) to the latest AI sprint on the card and on every subtask, including the ones step 3 just created. Read the option live: `{{mc:mctl}} plugin call clickup-board board.load --params '{"boardId":"<board id>"}' --json` → `fields` → "Planning" → `options`, with the board id from `{{mc:mctl}} plugin call clickup-board boards.list --json` (the saved board whose folder is `~/klangtech`, or the only one). STOP: leave Planning unchanged.
+5. A card whose `fields.json.parent` is set is already a child of another card. Keep its estimate on itself when the package has one outcome. Create further children only when step 2 accepted them. Report the readback.
+6. Read everything back and report what saved: the comment present once with the two U+2063 characters, Planning on the card and on each subtask, the subtasks and their estimates. A partial write is reported from the readback. A child that failed the business-value check is named here and is not on the card.
 
 ## 7. REHEARSAL
 The G1 loop, owned by the session. Nothing is posted.

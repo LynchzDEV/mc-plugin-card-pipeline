@@ -106,6 +106,12 @@ describe('project-manager agent', () => {
   whenAgents('names no machine path', () => {
     expect(text).not.toContain('/home/')
   })
+
+  whenAgents('splits only on an independently useful business outcome', () => {
+    expect(text).toContain('independently useful business outcome')
+    expect(text).not.toContain('one subtask per repo')
+    expect(text).not.toContain('Subtasks exist only when the work splits across repos')
+  })
 })
 
 describe('code-architect agent', () => {
@@ -162,6 +168,12 @@ describe('card-refine skill', () => {
     const createStep = send.findIndex((line) => line.includes('create only the missing ones'))
     expect(createStep).toBeGreaterThan(-1)
     expect(send.findIndex((line) => line.includes('set Planning'))).toBeGreaterThan(createStep)
+  })
+
+  whenRelease('SEND checks each child outcome and does not delete existing subtasks', () => {
+    const send = text.slice(text.indexOf('## 6. SEND'), text.indexOf('## 7.'))
+    expect(send).toContain('independently useful business outcome')
+    expect(send).toContain('Do not delete subtasks already on the card')
   })
 })
 

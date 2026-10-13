@@ -5,29 +5,8 @@ shape: numbered-cr
 verdict: ASK-HUMAN
 numberedItems: 14
 estimate: none
-subtasks:
-  - repo: klangtech-army
-    title: "ส่วนหัวและการ์ด (ข้อ 1, 5, 7)"
-    items: ["1", "5", "7"]
-    hours: null
-  - repo: klangtech-army
-    title: "รายการสินค้าและกฎอัปเซลล์ (ข้อ 2, 3, 8)"
-    items: ["2", "3", "8"]
-    hours: null
-  - repo: klangtech-army
-    title: "ช่องตัวเลขและช่องที่ยังขาด (ข้อ 4, 6, 9, 10)"
-    items: ["4", "6", "9", "10"]
-    hours: null
-  - repo: klangtech-army
-    title: "หน้าเขียนบทพูด (ข้อ 11, 12)"
-    items: ["11", "12"]
-    hours: null
-  - repo: klangtech-army
-    title: "บทพูดสอบถามราคา (ข้อ 14)"
-    items: ["14"]
-    hours: null
+subtasks: []
 sprint: "Sprint 19AI (12/10 - 16/10)"
-hoursNote: "subtask hours were not recorded on ClickUp; the Estimate dimension is not scored for this card"
 approved: "2026-10-12 posted by the owner (comment 1301460000010137)"
 ---
 ## Comment
@@ -41,12 +20,13 @@ approved: "2026-10-12 posted by the owner (comment 1301460000010137)"
 ---
 
 - Requirement นี้เป็นการทำงานที่ Army หน้าตั้งค่าเอเจนต์ VAYU โดยปรับเฉพาะ VAYU ส่วน HerMEZ / MoNi คงเดิม
-- แยกเป็น 5 subtask: ส่วนหัวและการ์ด (ข้อ 1, 5, 7) / รายการสินค้าและกฎอัปเซลล์ (ข้อ 2, 3, 8) / ช่องตัวเลขและช่องที่ยังขาด (ข้อ 4, 6, 9, 10) / หน้าเขียนบทพูด (ข้อ 11, 12) / บทพูดสอบถามราคา (ข้อ 14) ครับ⁣⁣
+- ทำส่วนหัวและการ์ด (ข้อ 1, 5, 7) / รายการสินค้าและกฎอัปเซลล์ (ข้อ 2, 3, 8) / ช่องตัวเลขและช่องที่ยังขาด (ข้อ 4, 6, 9, 10) / หน้าเขียนบทพูด (ข้อ 11, 12) / บทพูดสอบถามราคา (ข้อ 14) ครับ⁣⁣
 
 ## Key facts (atomic, for the judge)
 - Verdict: enough to start almost everything, but ข้อ 14 needs a business answer (the price-inquiry script text and whether every new VAYU gets it).
 - ข้อ 1 removes the header line "แชทด้วย AI · ใช้ใน 4 สเต็ป · เชื่อมกับ 1 เพจ" and the "ตั้งค่าครบ 3 / 5 ส่วน" card (red boxes in the screenshots).
 - ข้อ 13 is ไม่ต้องทำ because the "รายการที่สั่ง" variable already exists for inserting into the script.
 - Scope is the VAYU agent settings page in Army only; HerMEZ / MoNi untouched.
-- Five work groups: (1,5,7) header and cards; (2,3,8) product rows and upsell rules; (4,6,9,10) numeric fields and missing-field marking; (11,12) script-writing page; (14) price-inquiry script, pending the answer.
+- Item groups stay in the comment and are not subtasks: (1,5,7) header and cards; (2,3,8) product rows and upsell rules; (4,6,9,10) numeric fields and missing-field marking; (11,12) script-writing page; (14) price-inquiry script, pending the answer.
+- No hour estimate, because the verdict is ASK-HUMAN. The open question does not create a child.
 - Every one of the 14 items has exactly one disposition; ข้อ 14 is the only question; no priority question.

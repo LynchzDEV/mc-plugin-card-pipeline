@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { readFileSync, readdirSync } from 'node:fs'
-import { CARDS, type Key, type KeySubtask, readKeyFixture, tempFile } from './helpers'
+import { type LintSubtask } from '../skills/card-refine/scripts/lint'
+import { CARDS, type Key, readKeyFixture, tempFile } from './helpers'
 
 const LINT = 'skills/card-refine/scripts/lint.ts'
 const MARKER = '⁣⁣'
@@ -9,7 +10,7 @@ interface LintOptions {
   verdict: string
   items?: number
   subitems?: string[]
-  subtasks?: Array<Omit<KeySubtask, 'items'> & { items?: string[] }>
+  subtasks?: LintSubtask[]
 }
 
 function lint(comment: string, options: LintOptions) {
@@ -164,17 +165,18 @@ describe('numbered items', () => {
 
 describe('subtasks and hours', () => {
   const subtasks = [{ repo: 'klangtech-army', title: 'ช่องค้นหา', items: [], hours: 3 }]
+  const child = { repo: 'klangtech-army', title: 'หน้าคิวที่ส่งมอบได้', items: [] as string[], hours: 8 }
 
   test('a repo outside the registry fails', () => {
-    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...fuv78.subtasks[0]!, repo: 'Old server' }] }, 'repo-not-in-registry')
+    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...child, repo: 'Old server' }] }, 'repo-not-in-registry')
   })
 
   test('a title carrying its own [repo] prefix fails', () => {
-    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...fuv78.subtasks[0]!, title: '[klangtech-army] หน้า Kood Queue' }] }, 'repo-not-in-registry')
+    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...child, title: '[klangtech-army] หน้า Kood Queue' }] }, 'repo-not-in-registry')
   })
 
   test('4 hours on a subtask fails', () => {
-    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...fuv78.subtasks[0]!, hours: 4 }] }, 'hours-not-fibonacci')
+    expectCode(fuv78.comment, { ...keyOptions(fuv78), subtasks: [{ ...child, hours: 4 }] }, 'hours-not-fibonacci')
   })
 
   test('4 hours in the estimate line fails', () => {
@@ -187,6 +189,20 @@ describe('subtasks and hours', () => {
 
   test('an estimate line next to subtasks fails', () => {
     expectCode(futr8.comment, { ...keyOptions(futr8), subtasks }, 'parent-hours-with-slices')
+  })
+
+  test('a subtask with no hours fails', () => {
+    const comment = futr8.comment.replace('- **ประมาณการจำนวนชั่วโมง:**', '- งานอยู่ที่หน้าลูกค้า ชั่วโมงอยู่ที่ subtask ครับ\n- ไม่ใช้บรรทัด')
+    expectCode(comment, { ...keyOptions(futr8), subtasks: [{ repo: 'klangtech-army', title: 'ช่องค้นหา', hours: null }] }, 'hours-not-fibonacci')
+    expectCode(comment, { ...keyOptions(futr8), subtasks: [{ repo: 'klangtech-army', title: 'ช่องค้นหา' }] }, 'hours-not-fibonacci')
+  })
+
+  test('Fibonacci hours on a subtask and no parent estimate pass the hours check', () => {
+    const comment = futr8.comment.replace('- **ประมาณการจำนวนชั่วโมง:** 3 ชั่วโมง (ช่องค้นหาตามชื่อและเบอร์โทร, ให้ผลค้นหาคงอยู่เมื่อเปลี่ยนตัวกรอง เปลี่ยนหน้า และส่งออก CSV, รวมชุดทดสอบ) ครับ', '- งานของช่องค้นหาอยู่ในการ์ดย่อยครับ')
+    const result = lint(comment, { ...keyOptions(futr8), subtasks: [{ repo: 'klangtech-army', title: 'ช่องค้นหา', hours: 3 }] })
+    expect(result.codes, result.output).not.toContain('hours-not-fibonacci')
+    expect(result.codes, result.output).not.toContain('parent-hours-with-slices')
+    expect(result.exitCode, result.output).toBe(0)
   })
 })
 
@@ -205,7 +221,7 @@ describe('words and links', () => {
 
   test('[Army] as a work label fails, a linked card titled [Army] passes', () => {
     expectCode(fuv78.comment.replace('ที่ Army และระบบเดิม', 'ที่ [Army] และระบบเดิม'), keyOptions(fuv78), 'forbidden-token')
-    expect(fuv78.comment).toContain('[\\[Army] Migrate 1 Care Queue')
+    expect(fuv78.comment).toContain('[\\[Army\\] Migrate 1 Care Queue')
   })
 
   test('a file path or a type name fails', () => {
@@ -218,8 +234,8 @@ describe('words and links', () => {
   })
 
   test('the same card linked twice fails', () => {
-    const link = '[\\[Army] Migrate 1 Care Queue ยังไม่แสดงที่ Army](https://app.clickup.com/t/3845974/14znf2fuv79)'
-    expectCode(fuv78.comment.replace('ส่งซ้ำ 13 ชั่วโมง', `ส่งซ้ำ ${link} 13 ชั่วโมง`), keyOptions(fuv78), 'card-linked-twice')
+    const link = '[\\[Army\\] Migrate 1 Care Queue ยังไม่แสดงที่ Army](https://app.clickup.com/t/3845974/14znf2fuv79)'
+    expectCode(fuv78.comment.replace('คิวแคร์ไม่เปลี่ยนในการ์ดนี้', `คิวแคร์ไม่เปลี่ยนในการ์ดนี้ ${link}`), keyOptions(fuv78), 'card-linked-twice')
   })
 
   test('a question about urgency fails', () => {
