@@ -110,7 +110,7 @@ const SUBTASK_LINE = /^- \[([^\]]+)\] (.+?) — (.*) — (\S+) hours — (.+)$/
 const NUMBER = /^\d+(?:\.\d+)?/
 const BUCKETS = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 const JUDGE_HARD_FAILS = ['fabricated-value', 'dropped-item', 'question-answerable', 'priority-question', 'scope-dropped', 'wrong-repo']
-const SEEDS = [1, 2]
+const SEEDS = Array.from({ length: Number(process.env.JUDGE_RUNS ?? 2) }, (_, index) => index + 1)
 
 export function parsePackage(text: string): Pack {
   const sections = new Map<string, string[]>()
@@ -175,7 +175,8 @@ function withPlannedItems(subtasks: DraftSubtask[], cardDir: string): DraftSubta
 
 export function itemTokens(title: string, items: string[] = []): string[] {
   const cited = citations(title).flatMap((citation) => citation.numbers)
-  return [...new Set([...cited, ...items])].toSorted()
+  const all = new Set([...cited, ...items])
+  return [...all].filter((token) => !all.has(token.split('.')[0]!) || !token.includes('.')).toSorted()
 }
 
 function sameMultiset(left: string[], right: string[]): boolean {
