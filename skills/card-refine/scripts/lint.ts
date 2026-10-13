@@ -342,7 +342,8 @@ function spacingFindings(comment: string): Finding[] {
 }
 
 function businessLengthFindings(view: Layout): Finding[] {
-  const lines = view.business.filter((line) => line.trim())
+  const questionStart = view.business.findIndex((line) => isHeading(line) && plain(line) === 'คำถาม')
+  const lines = view.business.filter((line, index) => line.trim() && (questionStart < 0 || index < questionStart))
   const chars = lines.join('\n').length
   const findings: Finding[] = []
   if (lines.length > MAX_BUSINESS_LINES || chars > MAX_BUSINESS_CHARS) findings.push({ code: 'business-too-long', evidence: `${lines.length} lines / ${chars} characters in the business block; at most ${MAX_BUSINESS_LINES} lines and ${MAX_BUSINESS_CHARS} characters` })
