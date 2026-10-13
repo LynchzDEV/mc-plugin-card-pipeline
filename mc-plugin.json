@@ -1,7 +1,7 @@
 {
   "id": "card-pipeline",
   "name": "Card pipeline",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Refines one KlangTech ClickUp card at a time: the session lands the card, the project-manager agent investigates through code-architect and asks production only through the session (production-investigator), a script lints the Thai comment and a cross-family advisor flags problems without blocking, then the owner approves on one screen and the session posts and reads back. Nothing is written to ClickUp, code or production until the owner says yes; every owner edit becomes an example the next run reads.",
   "pluginApi": 2,
   "runtime": "isolated",

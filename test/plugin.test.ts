@@ -7,7 +7,7 @@ const manifest = JSON.parse(readFileSync('mc-plugin.json', 'utf8'))
 const contributes = manifest.contributes as { agents: string[]; skills: string[]; flows: string[] }
 const AGENTS = ['agents/project-manager.md', 'agents/code-architect.md', 'agents/production-investigator.md']
 const agentsReady = AGENTS.every((path) => existsSync(path))
-const releaseReady = manifest.version === '0.5.1'
+const releaseReady = manifest.version === '0.5.2'
 const whenAgents = agentsReady ? test : test.todo
 const whenRelease = releaseReady ? test : test.todo
 
@@ -62,7 +62,7 @@ describe('manifest', () => {
   })
 
   whenRelease('package.json carries the same version', () => {
-    expect(JSON.parse(readFileSync('package.json', 'utf8')).version).toBe('0.5.1')
+    expect(JSON.parse(readFileSync('package.json', 'utf8')).version).toBe('0.5.2')
   })
 })
 
