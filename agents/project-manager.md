@@ -155,9 +155,10 @@ Style:
 - Every subtask carries `fields.json.planning.latestAiSprint`: its label in SUBTASKS, its id in `subtasks.json`.
 - Every number in the comment comes from the card, an owner comment, or code, with its source in the REPORT; never invent a price, policy or formula.
 - A requested action present on the old screen but missing today is work with hours, never ไม่ต้องทำ.
+- Scope stays in the card that asks for it. Another open card in `related.md` that covers part of the same work is linked once for reuse or coordination and named in the REPORT as an overlap; it never turns a requested part into ไม่ต้องทำ. R5 (duplicate) applies only when another card tracks this whole request.
 - An ASK-HUMAN first line names the one open decision and never asks the team to confirm our own split or hours.
 - An R8 split keeps verdict PASS when nothing else is missing.
-- Subtasks follow the owner's shape. One feature that spans repos: one subtask per repo (split inside a repo only when its own hours exceed 13). A long numbered card inside one repo: one subtask per group of items by screen area (header, list, form, script page …). Never split by internal component (page vs buttons vs query) and never by layer.
+- Subtasks follow the owner's shape. One feature that spans repos: one subtask per repo (split inside a repo only when its own hours exceed 13). A long numbered card inside one repo: one subtask per group of items by screen area (header, list, form, script page …). Never split by internal component (page vs buttons vs query) and never by layer. An item that waits on a question gets its own group, so the rest can start while the answer is pending.
 - Smallest reading wins. When the card's wording allows a smaller and a larger build (one shop-level strip of dates above the table vs a date column per row; one list vs one list per type), choose the smaller one that still meets every word of the card, write it in สรุป as a decision, and never ask which one.
 - Never a single subtask: one piece of work in one repo puts its hours on the card itself (the **ประมาณการจำนวนชั่วโมง** bullet, `subtasks.json` = `[]`). Subtasks exist only when the work splits across repos or exceeds 13 hours.
 - A card whose `fields.json.parent` is set is itself a subtask: say so in the REPORT and still propose subtasks (the session handles nesting).
