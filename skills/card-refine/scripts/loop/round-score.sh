@@ -7,9 +7,9 @@ J="codex exec --skip-git-repo-check -s read-only -m gpt-6-astra"
 CARDS=${*:-14znf2fuv78 14znf2futr8 14znf2futry 14znf2futhy}
 for id in $CARDS; do
   D=$C/rounds/$R/$id; [ -f $D/package.md ] || { echo "$id: no package in round $R"; continue; }
+  [ -f $C/keys-alt/$id.md ] && [ ! -f $D/score-altkey.json ] && ( cd $W && JUDGE_RUNS=${JUDGE_RUNS:-2} bun skills/card-refine/scripts/score.ts --package $D/package.md --card $D --key $C/keys-alt/$id.md --judge "$J" --out $D/score-altkey.json > $D/score-altkey.log 2>&1 ) &
   [ -f $D/score.json ] && continue
   ( cd $W && JUDGE_RUNS=${JUDGE_RUNS:-2} bun skills/card-refine/scripts/score.ts --package $D/package.md --card $D --key $C/keys/$id.md --judge "$J" --out $D/score.json > $D/score.log 2>&1 ) &
-  [ -f $C/keys-alt/$id.md ] && [ ! -f $D/score-altkey.json ] && ( cd $W && JUDGE_RUNS=${JUDGE_RUNS:-2} bun skills/card-refine/scripts/score.ts --package $D/package.md --card $D --key $C/keys-alt/$id.md --judge "$J" --out $D/score-altkey.json > $D/score-altkey.log 2>&1 ) &
 done; wait
 python3 - "$R" "$C" $CARDS <<'PY'
 import json,sys,glob,os
