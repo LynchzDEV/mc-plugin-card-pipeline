@@ -19,8 +19,9 @@ For each card:
 1. Fetch the task with the ClickUp get-task tool (`include`: description, custom_fields, attachments, subtasks, linked_tasks) and its comments with get-task-comments.
 2. Save them as `task.json` and `comments.json` under `~/.cache/card-pipeline/cards/<card-id>/` (durable, never /tmp, never inside a repo).
 3. Run `bun ~/.claude/skills/card-refine/scripts/land.ts --task ~/.cache/card-pipeline/cards/<card-id>/task.json --comments ~/.cache/card-pipeline/cards/<card-id>/comments.json --out ~/.cache/card-pipeline/cards/<card-id>/`.
-4. Open every file in `shots/` yourself; a `.missing` file means the download failed twice.
-5. Report pass with the card folder path as evidence.
+4. Fetch the other open cards that share this card's tags (ClickUp filter by tag, same list) and write `related.md` into the card folder: `- <name> (<id>) — <status>` per card, excluding this card; write `none` when there are no tags or no siblings.
+5. Open every file in `shots/` yourself; a `.missing` file means the download failed twice.
+6. Report pass with the card folder path as evidence.
 
 ## 3. PROJECT-MANAGER
 A flow node, not the session. The job runs the `project-manager` agent with:

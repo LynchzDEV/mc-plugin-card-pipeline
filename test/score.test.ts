@@ -1,8 +1,13 @@
 import { describe, expect, test } from 'bun:test'
-import { existsSync, mkdtempSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { CARDS, type Key, packageFromKey, readKeyFixture, tempFile } from './helpers'
+
+function promptFiles(dir: string, seed: number): string[] {
+  return readdirSync(dir).filter((name) => name.startsWith(`judge-prompt-${seed}-`)).sort().map((name) => join(dir, name))
+}
+
 
 const SCORE = 'skills/card-refine/scripts/score.ts'
 const STUB = `bun ${resolve('test/fixtures/judge-stub.ts')}`
@@ -152,8 +157,8 @@ describe('judged scoring with the stub judge', () => {
       expect(result.score).toBe(100)
       expect(result.judgeRuns).toBe(2)
       expect(result.empty).toEqual({ '14znf2futhy': ['estimate'], '14znf2futr8': ['subtasks.intent'] }[card as string] ?? [])
-      expect(existsSync(join(cardDir(card), 'judge-prompt-1.md'))).toBe(true)
-      expect(existsSync(join(cardDir(card), 'judge-prompt-2.md'))).toBe(true)
+      expect(promptFiles(cardDir(card), 1).length).toBeGreaterThan(0)
+      expect(promptFiles(cardDir(card), 2).length).toBeGreaterThan(0)
     })
 
     test(`${card} with every key fact missed loses the facts points`, () => {
@@ -180,7 +185,7 @@ describe('judged scoring with the stub judge', () => {
   test('the prompt shuffles items differently per seed', () => {
     const key = readKeyFixture('14znf2futhy')
     judged(key, 'all-yes')
-    const order = (seed: number) => [...readFileSync(join(cardDir(key.card), `judge-prompt-${seed}.md`), 'utf8').matchAll(/^- ([KIS]\d+):/gm)].map(([, id]) => id)
+    const order = (seed: number) => [...readFileSync(promptFiles(cardDir(key.card), seed).at(-1)!, 'utf8').matchAll(/^- ([KIS]\d+):/gm)].map(([, id]) => id)
     expect(order(1).toSorted()).toEqual(order(2).toSorted())
     expect(order(1)).not.toEqual(order(2))
   })

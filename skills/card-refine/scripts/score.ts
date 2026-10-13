@@ -150,6 +150,7 @@ export function readKey(path: string): ScoreKey {
   const factsStart = text.indexOf('## Key facts')
   return {
     verdict: String(meta.verdict),
+    ownerFacts: typeof (meta as { ownerFacts?: unknown }).ownerFacts === 'string' ? String((meta as { ownerFacts?: unknown }).ownerFacts) : null,
     numberedItems: Number(meta.numberedItems ?? 0),
     subItems: (meta.subItems ?? []).map(String),
     estimate: typeof meta.estimate === 'number' ? meta.estimate : null,
@@ -327,12 +328,20 @@ function judgePrompt(pack: Pack, items: JudgeItem[], reference: string, seed: nu
     'You grade a draft refinement for one KlangTech ClickUp card. card.md (the card), facts.md (the code findings) and prod.md (production answers, when present) are in the current directory; read them when a claim needs checking.',
     reference,
     `## Draft package\n${pack.text}`,
-    '## Items\nAnswer every item on its own with yes, no or unknown and one line of evidence. A paraphrase with the same meaning is yes.',
+    '## Items\nAnswer every item on its own with yes, no or unknown and one line of evidence. A paraphrase with the same meaning is yes. A fact phrased as an absence ("no X", "without X") is yes when the draft indeed contains no X. A fact about the repo, the hours or the number of subtasks is yes when the SUBTASKS or ESTIMATE lines of the package carry it.',
     shuffled(items, seed).map((item) => `- ${item.id}: ${item.text}`).join('\n'),
     '## Claims\nSplit the draft COMMENT and SUBTASKS into atomic claims D1..Dn. A claim is yes when the reference, card.md, the human comments or facts.md supports it, no when nothing does, unknown when you cannot tell.',
-    `## Hard fails\nRaise only these codes, each with evidence, only when clearly present: fabricated-value (a number, price, policy or formula with no source in the card, the owner's words or facts.md), dropped-item (a numbered item never disposed), question-answerable (a question that the card, a screenshot or facts.md answers), priority-question (a question about priority or urgency), scope-dropped (requested work written as ไม่ต้องทำ), wrong-repo (a subtask label naming the wrong repo).`,
+    `## Hard fails\nRaise only these codes, each with evidence, only when clearly present: fabricated-value (a price, limit, count, date, policy or formula presented as fact with no source in the card, the owner's words or facts.md; hour estimates, subtask hours, the sprint label (it comes from the card's Planning options in fields.json) and any number from the owner's words are never fabricated-value), dropped-item (a numbered item never disposed), question-answerable (a question that the card, a screenshot or facts.md answers), priority-question (a question about priority or urgency), scope-dropped (requested work written as ไม่ต้องทำ), wrong-repo (a subtask label naming the wrong repo).`,
     '## Output\nOutput only one JSON object and nothing after it:\n{"items":[{"id":"<item id>","verdict":"yes|no|unknown","evidence":"..."}],"claims":[{"id":"D1","text":"...","verdict":"yes|no|unknown","evidence":"..."}],"hardFails":[{"code":"...","evidence":"..."}],"anchor":{"row":null}}',
   ].join('\n\n')
+}
+
+function ownerWords(cardDir: string, key: ScoreKey | null): string {
+  const path = join(cardDir, 'owner.md')
+  const fromCard = existsSync(path) ? readFileSync(path, 'utf8').trim() : ''
+  const fromKey = key?.ownerFacts ?? ''
+  const text = [fromKey, fromCard].filter(Boolean).join('\n')
+  return text ? `## Owner's words (count as the card's own words; a value stated here is never fabricated)\n${text}` : ''
 }
 
 function keyReference(key: ScoreKey): string {
@@ -397,7 +406,7 @@ function asAnswer(value: unknown, itemIds: string[]): JudgeAnswer | null {
 }
 
 function runJudge(command: string, cardDir: string, prompt: string, seed: number, itemIds: string[]): JudgeAnswer | null {
-  const file = `judge-prompt-${seed}.md`
+  const file = `judge-prompt-${seed}-${process.pid}-${Date.now()}.md`
   writeFileSync(join(cardDir, file), prompt)
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const run = Bun.spawnSync(['sh', '-c', `${command} "$(cat ${file})"`], { cwd: cardDir, stdout: 'pipe', stderr: 'pipe' })
@@ -513,7 +522,7 @@ export function scorePackage(input: ScoreInput) {
   const anchors = readAnchors(input.anchorsPath)
   const items = key ? keyItems(key) : []
   const weights: Weights = key ? keyWeights(key) : { facts: 40 + (mechanical.dimensions.coverage === null ? 15 : 0), coverage: mechanical.dimensions.coverage, estimate: 10 }
-  const reference = key ? keyReference(key) : anchorReference(anchors.hours, anchors.text)
+  const reference = [key ? keyReference(key) : anchorReference(anchors.hours, anchors.text), ownerWords(cardDir, key)].filter(Boolean).join('\n\n')
   const context: RunContext = { mode: key ? 'key' : 'no-key', weights, unnumbered: key?.numberedItems === 0, anchors: anchors.hours, draftTotal: totalHours(pack.subtasks, pack.estimate) }
   const judged = input.judgeCommand ? judge(input.judgeCommand, cardDir, (seed) => judgePrompt(pack, items, reference, seed), items, context) : null
   const intent = key && key.numberedItems === 0 ? judged?.intent ?? null : mechanical.parts.intent
