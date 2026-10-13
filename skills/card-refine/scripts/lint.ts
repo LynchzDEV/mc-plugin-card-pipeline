@@ -136,9 +136,17 @@ function questionFindings(view: Layout): Finding[] {
 }
 
 function endingFindings(view: Layout): Finding[] {
-  const findings: Finding[] = view.business
-    .filter((line) => !isHeading(line) && !line.trim().endsWith('ครับ'))
+  const prose = view.business.filter((line) => !isHeading(line) && !line.trim().startsWith('- '))
+  const findings: Finding[] = prose
+    .filter((line) => !line.trim().endsWith('ครับ'))
     .map((line) => ({ code: 'krap-ending', evidence: `line does not end with ครับ: '${line.trim()}'` }))
+  const questionStart = view.business.findIndex((line) => isHeading(line) && plain(line) === 'คำถาม')
+  view.business.forEach((line, index) => {
+    const count = line.split('ครับ').length - 1
+    const question = questionStart >= 0 && index > questionStart
+    if (!question && count > 1) findings.push({ code: 'krap-too-many', evidence: `ครับ ${count} times in one line; once, at the end of a paragraph: '${line.trim().slice(0, 60)}'` })
+    if (!question && line.trim().startsWith('- ') && count) findings.push({ code: 'krap-too-many', evidence: `a bullet carries no ครับ: '${line.trim().slice(0, 60)}'` })
+  })
   const lastDev = (view.dev.at(-1) ?? '').replaceAll(MARKER, '').trim()
   if (view.dev.length && !lastDev.endsWith('ครับ')) findings.push({ code: 'krap-ending', evidence: `the last dev bullet does not end with ครับ: '${lastDev}'` })
   return findings
@@ -318,10 +326,20 @@ function lengthFindings(comment: string): Finding[] {
   return lines > MAX_LINES ? [{ code: 'length', evidence: `${lines} non-empty lines; aim for at most ${MAX_LINES}`, warning: true }] : []
 }
 
-const MAX_BUSINESS_LINES = 8
-const MAX_BUSINESS_CHARS = 1000
-const MAX_LINE_CHARS = 360
+const MAX_BUSINESS_LINES = 6
+const MAX_BUSINESS_CHARS = 700
+const MAX_LINE_CHARS = 240
 const BARE_NOT_NEEDED = /^\s*(?:ข้อ\s*[\d.,\s]+(?:และ\s*[\d.]+\s*)?)?ไม่ต้องทำ\s*(?:ครับ)?\s*$/u
+
+function spacingFindings(comment: string): Finding[] {
+  const cut = comment.indexOf(DIVIDER)
+  const lines = (cut >= 0 ? comment.slice(0, cut) : comment).split('\n').slice(1)
+  const prose = (line: string) => line.trim() && !isHeading(line) && !line.trim().startsWith('- ')
+  return lines.flatMap((line, index): Finding[] => {
+    const next = lines[index + 1]
+    return next !== undefined && prose(line) && prose(next) ? [{ code: 'no-paragraph-spacing', evidence: `two paragraphs touch; put an empty line between them: '${line.trim().slice(0, 40)}' / '${next.trim().slice(0, 40)}'` }] : []
+  })
+}
 
 function businessLengthFindings(view: Layout): Finding[] {
   const lines = view.business.filter((line) => line.trim())
@@ -355,6 +373,7 @@ export function lintComment(comment: string, options: LintOptions): Finding[] {
     ...verdict,
     ...headingFindings(view),
     ...businessLengthFindings(view),
+    ...spacingFindings(comment),
     ...questionFindings(view),
     ...endingFindings(view),
     ...devFindings(view),

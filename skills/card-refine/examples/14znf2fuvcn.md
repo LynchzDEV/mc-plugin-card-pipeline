@@ -11,7 +11,6 @@ approved: "2026-10-13 owner: ok, edit every activity with yours — posted after
 ---
 ## Comment
 **log นี้ซ้ำกับ [\[Army\] ระบบจัดการ Customer ฝั่ง Army](https://app.clickup.com/t/3845974/86d4caked) ที่ทำอยู่แล้ว ไม่ทำซ้ำครับ**⁣⁣
-
 ## Key facts (atomic, for the judge)
 - Duplicate of [Army] ระบบจัดการ Customer ฝั่ง Army (86d4caked, in review): segment / page filter, filtered CSV export, sync from chat history moving to the new menu.
 - One bold line with the link, no hours, Planning unchanged.

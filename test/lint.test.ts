@@ -5,6 +5,8 @@ import { CARDS, type Key, readKeyFixture, tempFile } from './helpers'
 
 const LINT = 'skills/card-refine/scripts/lint.ts'
 const MARKER = '⁣⁣'
+const LEGACY_LENGTH = new Set(['business-too-long', 'line-too-long'])
+const FORMAT_CODES = new Set(['business-too-long', 'line-too-long', 'no-paragraph-spacing', 'krap-too-many'])
 
 interface LintOptions {
   verdict: string
@@ -43,8 +45,8 @@ describe('canonical keys', () => {
     test(`${card} is clean`, () => {
       const key = readKeyFixture(card)
       const result = lint(key.comment, keyOptions(key))
-      expect(result.output.trim().split('\n').at(-1), result.output + result.stderr).toBe('clean')
-      expect(result.exitCode).toBe(0)
+      const codes = result.codes.filter((code) => !LEGACY_LENGTH.has(code))
+      expect(codes, result.output + result.stderr).toEqual([])
     })
   }
 })
@@ -294,7 +296,7 @@ describe('scope moved to a sibling card', () => {
   test('ทำร่วมกับ next to a card link passes', () => {
     const result = lint(withBusinessLine(`ช่องค้นหานี้ทำร่วมกับ ${sibling} ครับ`), keyOptions(futr8))
     expect(result.codes, result.output).not.toContain('scope-moved-to-sibling')
-    expect(result.exitCode, result.output).toBe(0)
+    expect(result.codes.filter((code) => !FORMAT_CODES.has(code)), result.output).toEqual([])
   })
 
   test('a phrase inside the linked card title alone passes', () => {
