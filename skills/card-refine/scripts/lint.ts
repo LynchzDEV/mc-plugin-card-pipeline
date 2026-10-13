@@ -64,6 +64,7 @@ const NUMBER = String.raw`\d+(?:\.\d+)?`
 const RANGE_SEPARATORS = ['–', '-', 'ถึง']
 const CITATION = new RegExp(String.raw`ข้อ\s*(${NUMBER}(?:\s*(?:,|และ|–|-|ถึง)\s*${NUMBER})*)`, 'g')
 const MAX_LINES = 15
+const HANDOFF_PHRASES = ['ไม่ต้องทำ', 'ไปทำใน', 'ทำใน', 'อยู่ในการ์ด', 'ไปทำที่', 'ให้การ์ด', 'รวมอยู่ใน', 'ตามการ์ด', 'ไม่รวม', 'ยกไป', 'ทำที่การ์ด']
 const THAI_SHARE = 0.6
 
 export function withoutLinks(text: string): string {
@@ -290,6 +291,15 @@ function linkFindings(comment: string): Finding[] {
   return findings
 }
 
+function siblingFindings(view: Layout): Finding[] {
+  return view.business.flatMap((line): Finding[] => {
+    const card = CARD_URL.exec(line)?.[1]
+    const text = withoutLinks(line)
+    if (!card || !HANDOFF_PHRASES.some((phrase) => text.includes(phrase))) return []
+    return [{ code: 'scope-moved-to-sibling', evidence: `work handed to ${card} on line "${line.trim().slice(0, 60)}"` }]
+  })
+}
+
 function thaiFindings(view: Layout): Finding[] {
   const letters = view.business.filter((line) => !isHeading(line)).join('').match(/[\p{L}\p{M}]/gu) ?? []
   const thai = letters.filter((letter) => /[฀-๿]/.test(letter)).length
@@ -320,6 +330,7 @@ export function lintComment(comment: string, options: LintOptions): Finding[] {
     ...hoursFindings(comment, subtasks),
     ...wordFindings(comment),
     ...linkFindings(comment),
+    ...siblingFindings(view),
     ...thaiFindings(view),
     ...lengthFindings(comment),
   ]

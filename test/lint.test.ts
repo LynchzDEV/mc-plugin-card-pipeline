@@ -250,3 +250,43 @@ describe('words and links', () => {
     expectCode(comment, keyOptions(futr8), 'not-thai')
   })
 })
+
+describe('scope moved to a sibling card', () => {
+  const sibling = '[\\[Army] Migrate 1 Care Queue ยังไม่แสดงที่ Army](https://app.clickup.com/t/3845974/14znf2fuv79)'
+  const withBusinessLine = (line: string) => futr8.comment.replace('ตกหล่นไปตอนย้ายหน้าจอครับ', `ตกหล่นไปตอนย้ายหน้าจอครับ\n${line}`)
+
+  test('ไม่ต้องทำ next to a card link fails', () => {
+    const result = expectCode(withBusinessLine(`ส่วนช่องกรองไม่ต้องทำ เพราะ ${sibling} รับไปแล้วครับ`), keyOptions(futr8), 'scope-moved-to-sibling')
+    expect(result.output).toContain('work handed to 14znf2fuv79 on line "ส่วนช่องกรองไม่ต้องทำ')
+  })
+
+  test('ไปทำใน next to a card link fails', () => {
+    expectCode(withBusinessLine(`ส่วนช่องกรองไปทำใน ${sibling} ครับ`), keyOptions(futr8), 'scope-moved-to-sibling')
+  })
+
+  test('ไม่รวม next to a card link fails', () => {
+    expectCode(withBusinessLine(`งานนี้ไม่รวมช่องกรอง ซึ่งอยู่กับ ${sibling} ครับ`), keyOptions(futr8), 'scope-moved-to-sibling')
+  })
+
+  test('it is an error, not a warning', () => {
+    const result = lint(withBusinessLine(`ส่วนช่องกรองยกไป ${sibling} ครับ`), keyOptions(futr8))
+    expect(result.exitCode, result.output).toBe(1)
+    expect(result.output).toMatch(/^scope-moved-to-sibling:/m)
+    expect(result.output).not.toContain('warn scope-moved-to-sibling')
+  })
+
+  test('ทำร่วมกับ next to a card link passes', () => {
+    const result = lint(withBusinessLine(`ช่องค้นหานี้ทำร่วมกับ ${sibling} ครับ`), keyOptions(futr8))
+    expect(result.codes, result.output).not.toContain('scope-moved-to-sibling')
+    expect(result.exitCode, result.output).toBe(0)
+  })
+
+  test('a phrase inside the linked card title alone passes', () => {
+    const titled = '[งานที่ไม่รวมช่องกรอง](https://app.clickup.com/t/3845974/14znf2fuv79)'
+    expect(lint(withBusinessLine(`ช่องค้นหานี้เกี่ยวข้องกับ ${titled} ครับ`), keyOptions(futr8)).codes).not.toContain('scope-moved-to-sibling')
+  })
+
+  test('a phrase without a card link passes', () => {
+    expect(lint(withBusinessLine('ส่วนช่องกรองไม่ต้องทำในรอบนี้ครับ'), keyOptions(futr8)).codes).not.toContain('scope-moved-to-sibling')
+  })
+})
