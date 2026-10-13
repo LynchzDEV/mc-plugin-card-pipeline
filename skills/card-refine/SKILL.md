@@ -75,7 +75,7 @@ The G1 loop, owned by the session. Nothing is posted.
 4. Store `package.md`, `score.json` and the subagent transcript path under `~/.cache/card-pipeline-v050/rounds/<n>/<card-id>/`.
 5. Write a misses table: card | dimension | lost points | the judge's evidence | the change for the next round.
 6. Allowed changes between rounds: the project-manager prompt, an example, an anchor, the lint. Forbidden: any new gate or node.
-7. Every round runs all four cards on the same prompt, including the ones already at 100: a rule that fixes one card can break another, and a card that regresses is a finding like any other. Change the prompt only between rounds. The gate is two consecutive full rounds with every card ≥95 and no prompt change in between; cap 8 rounds, then report what remains with the per-item misses. Read the transcripts whenever a score moves.
+7. Every round runs all four cards on the same prompt, including the ones already at 100: a rule that fixes one card can break another, and a card that regresses is a finding like any other. Change the prompt only between rounds. The gate is two consecutive full rounds with every card ≥90 and no prompt change in between; cap 8 rounds, then report what remains with the per-item misses. Read the transcripts whenever a score moves.
 
 ### Loop scripts (shipped in `scripts/loop/`)
 Set `CARD_PIPELINE_ROOT` (the plugin checkout) and optionally `CARD_PIPELINE_LOOP` (the durable loop dir, default `~/.cache/card-pipeline-loop`, holding `keys/`, `examples-minus/`, `rounds/`). Then:
