@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { parseManifest } from '@mission-control/plugin-sdk/manifest'
+import { parseManifest } from '@shikidan/plugin-sdk/manifest'
 
 const manifest = JSON.parse(readFileSync('mc-plugin.json', 'utf8'))
 const contributes = manifest.contributes as { agents: string[]; skills: string[]; flows: string[] }

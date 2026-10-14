@@ -26,7 +26,7 @@ Reversible work runs without the owner. Nothing is written to ClickUp, code or p
 | scripts | `skills/card-refine/scripts/*.ts`, bun | — | `land.ts`, `lint.ts`, `score.ts`, `sprint.ts` | judging meaning |
 
 ## Install
-Shikidan → **Marketplace** → *Install from a link* → `https://github.com/LynchzDEV/mc-plugin-card-pipeline` → tick **I trust this plugin** → Install. No settings.
+Shikidan → **Marketplace** → *Install from a link* → `https://github.com/LynchzDEV/skd-plugin-card-pipeline` → tick **I trust this plugin** → Install. No settings.
 
 Shikidan copies the three agents and the `card-refine` skill (with its scripts and examples) into every engine's config and lists the **Card pipeline** flow in Studio. Updating from 0.3.7 removes the old `biz-gate` agent.
 
