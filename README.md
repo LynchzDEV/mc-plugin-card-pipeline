@@ -1,4 +1,4 @@
-# Card pipeline — Mission Control plugin (KlangTech)
+# Card pipeline — Shikidan plugin (KlangTech)
 
 Takes one KlangTech ClickUp card. In about ten minutes the owner sees a Thai refinement comment in the owner's voice, Fibonacci hours (13 at most) on the latest AI sprint, and an English report for developers. A subtask is created only when the task is too big and the child is one independently useful business outcome with its own estimate. A repository, a layer or a dev note is not one. One outcome that spans repositories keeps a single estimate on the card. The owner approves or edits; the session posts and reads back. Any answer the code, the old screen (backoffice) or production can give is looked up, never asked.
 
@@ -26,12 +26,12 @@ Reversible work runs without the owner. Nothing is written to ClickUp, code or p
 | scripts | `skills/card-refine/scripts/*.ts`, bun | — | `land.ts`, `lint.ts`, `score.ts`, `sprint.ts` | judging meaning |
 
 ## Install
-Mission Control → **Marketplace** → *Install from a link* → `https://github.com/LynchzDEV/mc-plugin-card-pipeline` → tick **I trust this plugin** → Install. No settings.
+Shikidan → **Marketplace** → *Install from a link* → `https://github.com/LynchzDEV/mc-plugin-card-pipeline` → tick **I trust this plugin** → Install. No settings.
 
-Mission Control copies the three agents and the `card-refine` skill (with its scripts and examples) into every engine's config and lists the **Card pipeline** flow in Studio. Updating from 0.3.7 removes the old `biz-gate` agent.
+Shikidan copies the three agents and the `card-refine` skill (with its scripts and examples) into every engine's config and lists the **Card pipeline** flow in Studio. Updating from 0.3.7 removes the old `biz-gate` agent.
 
 ### What it expects on your machine
-- Mission Control with plugin API 2, and bun.
+- Shikidan with plugin API 2, and bun.
 - The **clickup-board** plugin with the KlangTech board saved, and the ClickUp get-task / get-task-comments tools in your session.
 - KlangTech repos under `~/klangtech`.
 - The `inv-prod` skill and production access, for production lookups.

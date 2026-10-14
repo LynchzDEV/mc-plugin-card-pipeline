@@ -11,7 +11,7 @@ The session's manual for the card pipeline. The `project-manager` agent investig
 Stop and name what is missing:
 - The clickup-board plugin answers: `{{mc:mctl}} plugin call clickup-board boards.list --json`.
 - The `inv-prod` skill is installed (production lookups, step 4).
-- Mission Control is running (the flow and its project-manager job).
+- Shikidan is running (the flow and its project-manager job).
 - The ClickUp get-task and get-task-comments tools are available in this session.
 
 ## 2. LANDS
